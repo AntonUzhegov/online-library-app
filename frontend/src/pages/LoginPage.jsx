@@ -2,28 +2,34 @@ import { useState, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import AuthLayout from '../components/auth/AuthLayout'
+import api from '../service/api'
 
 function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const { login } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    
-    if (username && password) {
-      login({ username, role: 'user' })
+    setLoading(true)
+
+    try {
+      const response = await api.post('/auth/login', { username, password })
+      login(response.data)
       navigate('/')
-    } else {
-      setError('Заполните все поля')
+    } catch (err) {
+      setError(err.response?.data?.error || 'Ошибка входа. Проверьте логин и пароль')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <AuthLayout title="Добро пожаловать!" subtitle="Войдите в свою библиотеку" icon="📚">
+    <AuthLayout title="Добро пожаловать!" subtitle="Войдите в свою библиотеку">
       
       {error && (
         <div style={{
@@ -36,7 +42,7 @@ function LoginPage() {
           fontWeight: '500',
           textAlign: 'center'
         }}>
-          {error}
+          ⚠️ {error}
         </div>
       )}
 
@@ -78,7 +84,7 @@ function LoginPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="ivan_ivanov"
           />
         </div>
 
@@ -119,12 +125,13 @@ function LoginPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="••••••••"
           />
         </div>
 
         <button
           type="submit"
+          disabled={loading}
           style={{
             width: '100%',
             padding: '15px',
@@ -134,21 +141,26 @@ function LoginPage() {
             borderRadius: '40px',
             fontSize: '16px',
             fontWeight: '700',
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
             transition: 'all 0.3s',
             marginBottom: '24px',
-            boxShadow: '0 4px 14px rgba(26,122,82,0.3)'
+            boxShadow: '0 4px 14px rgba(26,122,82,0.3)',
+            opacity: loading ? 0.7 : 1
           }}
           onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-2px)'
-            e.target.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+            if (!loading) {
+              e.target.style.transform = 'translateY(-2px)'
+              e.target.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+            }
           }}
           onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)'
-            e.target.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+            if (!loading) {
+              e.target.style.transform = 'translateY(0)'
+              e.target.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+            }
           }}
         >
-          Войти
+          {loading ? 'Загрузка...' : 'Войти'}
         </button>
       </form>
 

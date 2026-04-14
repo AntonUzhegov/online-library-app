@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import AuthLayout from '../components/auth/AuthLayout'
+import api from '../service/api'
 
 function RegisterPage() {
   const [username, setUsername] = useState('')
@@ -11,50 +12,69 @@ function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccess('')
+    setLoading(true)
 
     if (password !== confirmPassword) {
       setError('Пароли не совпадают')
+      setLoading(false)
       return
     }
 
     if (password.length < 6) {
       setError('Пароль должен быть не менее 6 символов')
+      setLoading(false)
       return
     }
 
     if (username.length < 3) {
       setError('Логин должен быть не менее 3 символов')
+      setLoading(false)
       return
     }
 
     if (!email.includes('@')) {
       setError('Введите корректный email')
+      setLoading(false)
       return
     }
 
     if (firstName.length < 2) {
       setError('Имя должно быть не менее 2 символов')
+      setLoading(false)
       return
     }
 
     if (lastName.length < 2) {
       setError('Фамилия должна быть не менее 2 символов')
+      setLoading(false)
       return
     }
 
-    setTimeout(() => {
-      setSuccess('✅ Регистрация прошла успешно! Теперь войдите в систему.')
+    try {
+      await api.post('/auth/register', {
+        username,
+        email,
+        password,
+        firstName,
+        lastName
+      })
+      setSuccess('Регистрация прошла успешно! Теперь войдите в систему.')
       
       setTimeout(() => {
         navigate('/login')
       }, 2000)
-    }, 500)
+    } catch (err) {
+      setError(err.response?.data?.error || 'Ошибка регистрации. Попробуйте позже.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -100,7 +120,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Логин 
+            Логин *
           </label>
           <input
             type="text"
@@ -128,7 +148,7 @@ function RegisterPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="ivan_ivanov"
           />
         </div>
 
@@ -141,7 +161,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Email 
+            Email *
           </label>
           <input
             type="email"
@@ -169,7 +189,7 @@ function RegisterPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="ivanov@example.com"
           />
         </div>
 
@@ -182,7 +202,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Имя 
+            Имя *
           </label>
           <input
             type="text"
@@ -210,7 +230,7 @@ function RegisterPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="Иван"
           />
         </div>
 
@@ -223,7 +243,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Фамилия 
+            Фамилия *
           </label>
           <input
             type="text"
@@ -251,7 +271,7 @@ function RegisterPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="Иванов"
           />
         </div>
 
@@ -264,7 +284,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Пароль 
+            Пароль *
           </label>
           <input
             type="password"
@@ -292,7 +312,7 @@ function RegisterPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="минимум 6 символов"
           />
         </div>
 
@@ -305,7 +325,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Подтверждение пароля 
+            Подтверждение пароля *
           </label>
           <input
             type="password"
@@ -333,12 +353,13 @@ function RegisterPage() {
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
             }}
-            placeholder=""
+            placeholder="повторите пароль"
           />
         </div>
 
         <button
           type="submit"
+          disabled={loading}
           style={{
             width: '100%',
             padding: '15px',
@@ -348,21 +369,26 @@ function RegisterPage() {
             borderRadius: '40px',
             fontSize: '16px',
             fontWeight: '700',
-            cursor: 'pointer',
+            cursor: loading ? 'not-allowed' : 'pointer',
             transition: 'all 0.3s',
             marginBottom: '24px',
-            boxShadow: '0 4px 14px rgba(26,122,82,0.3)'
+            boxShadow: '0 4px 14px rgba(26,122,82,0.3)',
+            opacity: loading ? 0.7 : 1
           }}
           onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-2px)'
-            e.target.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+            if (!loading) {
+              e.target.style.transform = 'translateY(-2px)'
+              e.target.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+            }
           }}
           onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)'
-            e.target.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+            if (!loading) {
+              e.target.style.transform = 'translateY(0)'
+              e.target.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+            }
           }}
         >
-          Зарегистрироваться
+          {loading ? 'Загрузка...' : 'Зарегистрироваться'}
         </button>
       </form>
 
