@@ -42,7 +42,7 @@ function LoginPage() {
           fontWeight: '500',
           textAlign: 'center'
         }}>
-          ⚠️ {error}
+          {error}
         </div>
       )}
 
