@@ -120,7 +120,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Логин *
+            Логин 
           </label>
           <input
             type="text"
@@ -161,7 +161,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Email *
+            Email 
           </label>
           <input
             type="email"
@@ -202,7 +202,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Имя *
+            Имя 
           </label>
           <input
             type="text"
@@ -243,7 +243,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Фамилия *
+            Фамилия 
           </label>
           <input
             type="text"
@@ -284,7 +284,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Пароль *
+            Пароль 
           </label>
           <input
             type="password"
@@ -325,7 +325,7 @@ function RegisterPage() {
             fontSize: '14px',
             letterSpacing: '0.3px'
           }}>
-            Подтверждение пароля *
+            Подтверждение пароля 
           </label>
           <input
             type="password"
