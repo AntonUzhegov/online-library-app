@@ -9,6 +9,13 @@ function ProfilePage() {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [oldPassword, setOldPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+  const [passwordLoading, setPasswordLoading] = useState(false)
 
   useEffect(() => {
     if (!user) {
@@ -30,8 +37,45 @@ function ProfilePage() {
     fetchProfile()
   }, [user, navigate])
 
-  const handleChangePassword = () => {
-    alert('Функция смены пароля будет добавлена позже')
+  const handleChangePassword = async () => {
+    setPasswordError('')
+    setPasswordSuccess('')
+    setPasswordLoading(true)
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Пароли не совпадают')
+      setPasswordLoading(false)
+      return
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('Пароль должен быть не менее 6 символов')
+      setPasswordLoading(false)
+      return
+    }
+
+    try {
+      await api.put('/users/change-password', {
+        oldPassword,
+        newPassword
+      }, {
+        params: { username: user.username }
+      })
+
+      setPasswordSuccess('Пароль успешно изменён!')
+      setOldPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+
+      setTimeout(() => {
+        setShowPasswordModal(false)
+        setPasswordSuccess('')
+      }, 1500)
+    } catch (err) {
+      setPasswordError(err.response?.data?.error || 'Ошибка смены пароля')
+    } finally {
+      setPasswordLoading(false)
+    }
   }
 
   if (loading) {
@@ -172,8 +216,7 @@ function ProfilePage() {
                   backgroundColor: '#f8f9fa',
                   borderRadius: '16px',
                   padding: '16px',
-                  transition: 'transform 0.2s',
-                  cursor: 'pointer'
+                  transition: 'transform 0.2s'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-3px)'
@@ -205,7 +248,7 @@ function ProfilePage() {
             </div>
 
             <button 
-              onClick={handleChangePassword}
+              onClick={() => setShowPasswordModal(true)}
               style={{
                 width: '100%',
                 marginBottom: '12px',
@@ -259,6 +302,170 @@ function ProfilePage() {
           </div>
         </div>
       </div>
+      {showPasswordModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }} onClick={() => setShowPasswordModal(false)}>
+          
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '24px',
+            padding: '32px',
+            maxWidth: '400px',
+            width: '90%',
+            position: 'relative'
+          }} onClick={(e) => e.stopPropagation()}>
+            
+            <h2 style={{ fontSize: '24px', marginBottom: '20px', color: '#0a3b2a' }}>
+              Смена пароля
+            </h2>
+            
+            {passwordError && (
+              <div style={{
+                backgroundColor: '#fee2e2',
+                color: '#c0392b',
+                padding: '12px',
+                borderRadius: '12px',
+                marginBottom: '20px',
+                fontSize: '14px'
+              }}>
+                {passwordError}
+              </div>
+            )}
+            
+            {passwordSuccess && (
+              <div style={{
+                backgroundColor: '#d1fae5',
+                color: '#0f5c3e',
+                padding: '12px',
+                borderRadius: '12px',
+                marginBottom: '20px',
+                fontSize: '14px'
+              }}>
+                {passwordSuccess}
+              </div>
+            )}
+            
+            <input
+              type="password"
+              placeholder="Старый пароль"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                marginBottom: '15px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '12px',
+                fontSize: '14px',
+                boxSizing: 'border-box'
+              }}
+            />
+            
+            <input
+              type="password"
+              placeholder="Новый пароль (минимум 6 символов)"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                marginBottom: '15px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '12px',
+                fontSize: '14px',
+                boxSizing: 'border-box'
+              }}
+            />
+            
+            <input
+              type="password"
+              placeholder="Подтвердите новый пароль"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px',
+                marginBottom: '20px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '12px',
+                fontSize: '14px',
+                boxSizing: 'border-box'
+              }}
+            />
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={handleChangePassword}
+                disabled={passwordLoading}
+                style={{
+                  flex: 1,
+                  backgroundColor: passwordLoading ? '#ccc' : '#0f5c3e',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px',
+                  borderRadius: '40px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: passwordLoading ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  if (!passwordLoading) {
+                    e.target.style.backgroundColor = '#1a7a52'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!passwordLoading) {
+                    e.target.style.backgroundColor = '#0f5c3e'
+                  }
+                }}
+              >
+                {passwordLoading ? 'Сохранение...' : 'Сохранить'}
+              </button>
+              
+              <button
+                onClick={() => {
+                  setShowPasswordModal(false)
+                  setOldPassword('')
+                  setNewPassword('')
+                  setConfirmPassword('')
+                  setPasswordError('')
+                }}
+                style={{
+                  flex: 1,
+                  backgroundColor: '#e0e0e0',
+                  color: '#333',
+                  border: 'none',
+                  padding: '12px',
+                  borderRadius: '40px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#ccc'
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#e0e0e0'
+                }}
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
