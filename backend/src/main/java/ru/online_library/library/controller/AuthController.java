@@ -1,5 +1,7 @@
 package ru.online_library.library.controller;
 
+import ru.online_library.library.dto.LoginRequest;
+import ru.online_library.library.dto.RegisterRequest;
 import ru.online_library.library.model.User;
 import ru.online_library.library.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,26 +15,25 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             User user = authService.register(
-                    request.get("username"),
-                    request.get("email"),
-                    request.get("password"),
-                    request.get("firstName"),
-                    request.get("lastName")
+                    request.getUsername(),
+                    request.getEmail(),
+                    request.getPassword(),
+                    request.getFirstName(),
+                    request.getLastName()
             );
             return ResponseEntity.ok(Map.of(
-                    "id", user.getId(),
-                    "username", user.getUsername(),
-                    "email", user.getEmail(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "role", user.getRole().getValue()
+                    "message", "User registered successfully",
+                    "username", user.getUsername()
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -40,22 +41,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            User user = authService.login(
-                    request.get("username"),
-                    request.get("password")
-            );
+            String token = authService.authenticate(request.getUsername(), request.getPassword());
             return ResponseEntity.ok(Map.of(
-                    "id", user.getId(),
-                    "username", user.getUsername(),
-                    "email", user.getEmail(),
-                    "firstName", user.getFirstName(),
-                    "lastName", user.getLastName(),
-                    "role", user.getRole().getValue()
+                    "token", token,
+                    "type", "Bearer"
             ));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
         }
     }
 }

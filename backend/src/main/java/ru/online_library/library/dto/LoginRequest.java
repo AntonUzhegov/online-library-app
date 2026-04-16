@@ -1,4 +1,4 @@
-package com.example.library.dto;
+package ru.online_library.library.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

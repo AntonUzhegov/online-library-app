@@ -1,30 +1,48 @@
 package ru.online_library.library.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.online_library.library.model.Role;
 import ru.online_library.library.model.User;
 import ru.online_library.library.repository.UserRepository;
+import ru.online_library.library.security.JwtUtils;
+import ru.online_library.library.security.UserDetailsImpl;
 
 import java.time.LocalDateTime;
 
 @Service
 public class AuthService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserRepository userRepository;
+    public AuthService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtUtils jwtUtils,
+                       AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtils = jwtUtils;
+        this.authenticationManager = authenticationManager;
+    }
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    public User register(String username, String email, String password, String firstName, String lastName){
-        if(userRepository.existsByUsername(username)){
+    /**
+     * Регистрация нового пользователя
+     */
+    public User register(String username, String email, String password,
+                         String firstName, String lastName) {
+        if (userRepository.existsByUsername(username)) {
             throw new RuntimeException("Логин уже занят");
         }
 
-        if(userRepository.existsByEmail(email)){
+        if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email уже занят");
         }
 
@@ -38,18 +56,31 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    public User login(String username, String password){
-        User user = userRepository.findByUsername(username)
+    /**
+     * Аутентификация и генерация JWT токена
+     */
+    public String authenticate(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return jwtUtils.generateJwtToken(authentication);
+    }
+
+    /**
+     * Получить текущего авторизованного пользователя
+     */
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Пользователь не авторизован");
+        }
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userRepository.findById(userDetails.getId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-
-        if(!passwordEncoder.matches(password, user.getPassword())){
-            throw new RuntimeException("Неверный пароль");
-        }
-
-        if(!user.isActive()){
-            throw new RuntimeException("Аккаунт заблокирован");
-        }
-
-        return user;
     }
 }
