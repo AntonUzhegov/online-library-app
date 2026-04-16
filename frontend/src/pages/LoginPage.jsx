@@ -18,15 +18,21 @@ function LoginPage() {
     setLoading(true)
 
     try {
-      const response = await api.post('/auth/login', { username, password })
-      login(response.data)
-      navigate('/')
+        const response = await api.post('/auth/login', { username, password })
+        const { token } = response.data
+        
+        localStorage.setItem('token', token)
+
+        const userResponse = await api.get('/users/me')
+        login(userResponse.data)
+        
+        navigate('/')
     } catch (err) {
-      setError(err.response?.data?.error || 'Ошибка входа. Проверьте логин и пароль')
+        setError(err.response?.data?.error || 'Ошибка входа')
     } finally {
-      setLoading(false)
+        setLoading(false)
     }
-  }
+}
 
   return (
     <AuthLayout title="Добро пожаловать!" subtitle="Войдите в свою библиотеку">

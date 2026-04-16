@@ -25,7 +25,7 @@ function ProfilePage() {
 
     const fetchProfile = async () => {
       try {
-        const response = await api.get(`/users/me?username=${user.username}`)
+        const response = await api.get('/users/me')
         setProfile(response.data)
       } catch {
         setError('Ошибка загрузки профиля')

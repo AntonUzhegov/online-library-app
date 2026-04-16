@@ -58,24 +58,25 @@ function RegisterPage() {
     }
 
     try {
-      await api.post('/auth/register', {
-        username,
-        email,
-        password,
-        firstName,
-        lastName
-      })
-      setSuccess('Регистрация прошла успешно! Теперь войдите в систему.')
-      
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
+        await api.post('/auth/register', {
+            username,
+            email,
+            password,
+            firstName,
+            lastName
+        })
+        
+        setSuccess('Регистрация прошла успешно!')
+        
+        setTimeout(() => {
+            navigate('/login')
+        }, 2000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Ошибка регистрации. Попробуйте позже.')
+        setError(err.response?.data?.error || 'Ошибка регистрации')
     } finally {
-      setLoading(false)
+        setLoading(false)
     }
-  }
+}
 
   return (
     <AuthLayout title="Создать аккаунт" subtitle="Присоединяйтесь к нашей библиотеке">

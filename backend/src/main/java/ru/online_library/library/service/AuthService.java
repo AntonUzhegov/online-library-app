@@ -33,9 +33,6 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    /**
-     * Регистрация нового пользователя
-     */
     public User register(String username, String email, String password,
                          String firstName, String lastName) {
         if (userRepository.existsByUsername(username)) {
@@ -56,9 +53,6 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    /**
-     * Аутентификация и генерация JWT токена
-     */
     public String authenticate(String username, String password) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
@@ -69,9 +63,6 @@ public class AuthService {
         return jwtUtils.generateJwtToken(authentication);
     }
 
-    /**
-     * Получить текущего авторизованного пользователя
-     */
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

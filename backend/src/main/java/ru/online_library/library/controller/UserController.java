@@ -7,21 +7,21 @@ import org.springframework.web.bind.annotation.*;
 import ru.online_library.library.model.User;
 import ru.online_library.library.repository.UserRepository;
 import ru.online_library.library.service.AuthService;
-
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
-    private final AuthService authService;
 
-    public UserController(AuthService authService) {
-        this.authService = authService;
-    }
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
