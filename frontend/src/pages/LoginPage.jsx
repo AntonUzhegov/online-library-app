@@ -20,12 +20,12 @@ function LoginPage() {
     try {
         const response = await api.post('/auth/login', { username, password })
         const { token } = response.data
-        
+
         localStorage.setItem('token', token)
 
         const userResponse = await api.get('/users/me')
         login(userResponse.data)
-        
+
         navigate('/')
     } catch (err) {
         setError(err.response?.data?.error || 'Ошибка входа')
