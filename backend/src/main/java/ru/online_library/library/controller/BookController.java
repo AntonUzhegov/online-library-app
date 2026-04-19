@@ -42,4 +42,21 @@ public class BookController {
     public ResponseEntity<List<BookDTO>> filterByAuthor(@PathVariable Long authorId) {
         return ResponseEntity.ok(bookService.getBooksByAuthor(authorId));
     }
+
+    // Фильтрация по году (диапазон)
+    @GetMapping("/filter/year")
+    public ResponseEntity<List<BookDTO>> filterByYearRange(
+            @RequestParam(required = false) Integer yearFrom,
+            @RequestParam(required = false) Integer yearTo) {
+        if (yearFrom == null && yearTo == null) {
+            return ResponseEntity.ok(bookService.getAllBooks());
+        }
+        return ResponseEntity.ok(bookService.getBooksByYearRange(yearFrom, yearTo));
+    }
+
+    // Фильтрация по доступности
+    @GetMapping("/filter/available")
+    public ResponseEntity<List<BookDTO>> filterByAvailable(@RequestParam Boolean available) {
+        return ResponseEntity.ok(bookService.getBooksByAvailable(available));
+    }
 }

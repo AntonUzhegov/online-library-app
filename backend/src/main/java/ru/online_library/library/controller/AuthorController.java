@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.online_library.library.dto.AuthorDTO;
 import ru.online_library.library.model.Author;
 import ru.online_library.library.service.AuthorService;
 
@@ -20,7 +21,7 @@ public class AuthorController {
     private AuthorService authorService;
 
     @GetMapping
-    public ResponseEntity<List<Author>> getAllAuthors() {
+    public ResponseEntity<List<AuthorDTO>> getAllAuthors() {
         return ResponseEntity.ok(authorService.getAllAuthors());
     }
 }

@@ -17,4 +17,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // Фильтрация по автору
     List<Book> findByAuthors_Id(Long authorId);
+
+    // Фильтрация по году (диапазон)
+    List<Book> findByPublicationYearBetween(Integer yearFrom, Integer yearTo);
+
+    // Фильтрация по доступности
+    List<Book> findByAvailable(Boolean available);
 }

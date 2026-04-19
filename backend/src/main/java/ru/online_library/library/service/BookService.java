@@ -84,4 +84,20 @@ public class BookService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    // Фильтрация по году
+    public List<BookDTO> getBooksByYearRange(Integer yearFrom, Integer yearTo) {
+        return bookRepository.findByPublicationYearBetween(yearFrom, yearTo)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Фильтрация по доступности
+    public List<BookDTO> getBooksByAvailable(Boolean available) {
+        return bookRepository.findByAvailable(available)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }
