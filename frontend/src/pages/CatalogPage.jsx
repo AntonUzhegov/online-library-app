@@ -3,7 +3,7 @@ import api from '../service/api'
 
 function CatalogPage() {
   const [books, setBooks] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState('')
   
   const [searchQuery, setSearchQuery] = useState('')
@@ -11,10 +11,11 @@ function CatalogPage() {
   const [selectedBook, setSelectedBook] = useState(null)
   
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
+  const [categories, setCategories] = useState([])
   const categoryDropdownRef = useRef(null)
 
   useEffect(() => {
-    fetchBooks()
+    fetchCategories()
     
     const handleClickOutside = (event) => {
       if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
@@ -25,35 +26,48 @@ function CatalogPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    fetchBooks()
+  }, [searchQuery, selectedCategory])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await api.get('/categories')
+      setCategories(response.data)
+    } catch (err) {
+      console.error('Ошибка загрузки категорий')
+    }
+  }
+
   const fetchBooks = async () => {
     try {
-      const response = await api.get('/books')
+      let url = '/books'
+      const params = new URLSearchParams()
+      
+      if (searchQuery) {
+        url = '/books/search'
+        params.append('query', searchQuery)
+      } else if (selectedCategory) {
+        const category = categories.find(c => c.name === selectedCategory)
+        if (category) {
+          url = `/books/filter/category/${category.id}`
+        }
+      }
+      
+      const response = await api.get(url, { params })
       setBooks(response.data)
     } catch (err) {
       setError('Ошибка загрузки книг')
     } finally {
-      setLoading(false)
+      setInitialLoading(false)
     }
   }
-
-  const allCategories = [...new Set(books.flatMap(book => book.categories || []))]
-
-  const filteredBooks = books.filter(book => {
-    const matchSearch = searchQuery === '' || 
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (book.authors && book.authors.some(a => a.toLowerCase().includes(searchQuery.toLowerCase())))
-    
-    const matchCategory = selectedCategory === '' || 
-      (book.categories && book.categories.includes(selectedCategory))
-    
-    return matchSearch && matchCategory
-  })
 
   const handleBookClick = (book) => setSelectedBook(book)
   const closeModal = () => setSelectedBook(null)
   const handleReserve = () => alert('Функция бронирования будет добавлена позже')
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div style={{
         display: 'flex',
@@ -126,11 +140,12 @@ function CatalogPage() {
                 padding: '14px 18px',
                 border: '2px solid #e5e7eb',
                 borderRadius: '16px',
-                fontSize: '20px',
+                fontSize: '16px',
                 outline: 'none',
                 transition: 'all 0.2s',
                 backgroundColor: 'white',
-                height: '57px'
+                boxSizing: 'border-box',
+                height: '56px'
               }}
               onFocus={(e) => e.target.style.borderColor = '#0f5c3e'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
@@ -145,13 +160,15 @@ function CatalogPage() {
                 padding: '14px 18px',
                 border: `2px solid ${isCategoryOpen ? '#0f5c3e' : '#e5e7eb'}`,
                 borderRadius: '16px',
-                fontSize: '18px',
+                fontSize: '16px',
                 backgroundColor: 'white',
                 cursor: 'pointer',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                boxSizing: 'border-box',
+                height: '56px'
               }}
             >
               <span style={{ color: selectedCategory ? '#1a1a1a' : '#666' }}>
@@ -201,28 +218,28 @@ function CatalogPage() {
                 >
                   Все категории
                 </div>
-                {allCategories.map(cat => (
+                {categories.map(cat => (
                   <div
-                    key={cat}
+                    key={cat.id}
                     onClick={() => {
-                      setSelectedCategory(cat)
+                      setSelectedCategory(cat.name)
                       setIsCategoryOpen(false)
                     }}
                     style={{
                       padding: '12px 18px',
                       cursor: 'pointer',
                       transition: 'background 0.2s',
-                      backgroundColor: selectedCategory === cat ? '#f0f2f5' : 'white',
-                      fontWeight: selectedCategory === cat ? '600' : '400'
+                      backgroundColor: selectedCategory === cat.name ? '#f0f2f5' : 'white',
+                      fontWeight: selectedCategory === cat.name ? '600' : '400'
                     }}
                     onMouseEnter={(e) => {
-                      if (selectedCategory !== cat) e.target.style.backgroundColor = '#f8f9fa'
+                      if (selectedCategory !== cat.name) e.target.style.backgroundColor = '#f8f9fa'
                     }}
                     onMouseLeave={(e) => {
-                      if (selectedCategory !== cat) e.target.style.backgroundColor = 'white'
+                      if (selectedCategory !== cat.name) e.target.style.backgroundColor = 'white'
                     }}
                   >
-                    {cat}
+                    {cat.name}
                   </div>
                 ))}
               </div>
@@ -278,18 +295,18 @@ function CatalogPage() {
           padding: '6px 14px',
           borderRadius: '20px'
         }}>
-          Найдено книг: <strong style={{ color: '#0a3b2a', fontSize: '16px' }}>{filteredBooks.length}</strong>
+          Найдено книг: <strong style={{ color: '#0a3b2a', fontSize: '16px' }}>{books.length}</strong>
         </div>
       </div>
 
-      {filteredBooks.length === 0 ? (
+      {books.length === 0 ? (
         <div style={{
           textAlign: 'center',
           padding: '80px 20px',
           backgroundColor: '#f8f9fa',
           borderRadius: '24px'
         }}>
-          <span style={{ fontSize: '64px', display: 'block', marginBottom: '16px' }}>📚</span>
+          <span style={{ fontSize: '64px', display: 'block', marginBottom: '16px' }}></span>
           <h3 style={{ fontSize: '20px', color: '#333', marginBottom: '8px' }}>Ничего не найдено</h3>
           <p style={{ color: '#666' }}>Попробуйте изменить параметры поиска</p>
         </div>
@@ -299,7 +316,7 @@ function CatalogPage() {
           gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
           gap: '28px'
         }}>
-          {filteredBooks.map(book => (
+          {books.map(book => (
             <div
               key={book.id}
               onClick={() => handleBookClick(book)}
