@@ -8,6 +8,8 @@ function CatalogPage() {
   
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [yearFrom, setYearFrom] = useState('')
+  const [yearTo, setYearTo] = useState('')
   const [selectedBook, setSelectedBook] = useState(null)
   
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
@@ -28,7 +30,7 @@ function CatalogPage() {
 
   useEffect(() => {
     fetchBooks()
-  }, [searchQuery, selectedCategory])
+  }, [searchQuery, selectedCategory, yearFrom, yearTo])
 
   const fetchCategories = async () => {
     try {
@@ -52,10 +54,20 @@ function CatalogPage() {
         if (category) {
           url = `/books/filter/category/${category.id}`
         }
+      } else if (yearFrom || yearTo) {
+        url = '/books/filter/year'
+        if (yearFrom) params.append('yearFrom', yearFrom)
+        if (yearTo) params.append('yearTo', yearTo)
       }
       
       const response = await api.get(url, { params })
-      setBooks(response.data)
+      
+      const sortedBooks = [...response.data].sort((a, b) => {
+        if (a.available === b.available) return 0
+        return a.available ? -1 : 1
+      })
+      
+      setBooks(sortedBooks)
     } catch (err) {
       setError('Ошибка загрузки книг')
     } finally {
@@ -129,7 +141,7 @@ function CatalogPage() {
           gap: '16px',
           marginBottom: '16px'
         }}>
-          <div style={{ flex: '3', minWidth: '250px' }}>
+          <div style={{ flex: '2', minWidth: '200px' }}>
             <input
               type="text"
               placeholder="Поиск..."
@@ -140,7 +152,7 @@ function CatalogPage() {
                 padding: '14px 18px',
                 border: '2px solid #e5e7eb',
                 borderRadius: '16px',
-                fontSize: '16px',
+                fontSize: '18px',
                 outline: 'none',
                 transition: 'all 0.2s',
                 backgroundColor: 'white',
@@ -152,7 +164,7 @@ function CatalogPage() {
             />
           </div>
           
-          <div style={{ flex: '1', minWidth: '200px', position: 'relative' }} ref={categoryDropdownRef}>
+          <div style={{ flex: '1', minWidth: '180px', position: 'relative' }} ref={categoryDropdownRef}>
             <div
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
               style={{
@@ -160,7 +172,7 @@ function CatalogPage() {
                 padding: '14px 18px',
                 border: `2px solid ${isCategoryOpen ? '#0f5c3e' : '#e5e7eb'}`,
                 borderRadius: '16px',
-                fontSize: '16px',
+                fontSize: '18px',
                 backgroundColor: 'white',
                 cursor: 'pointer',
                 display: 'flex',
@@ -245,14 +257,62 @@ function CatalogPage() {
               </div>
             )}
           </div>
+
+          <div style={{ flex: '0.5', minWidth: '100px' }}>
+            <input
+              type="number"
+              placeholder="Год от"
+              value={yearFrom}
+              onChange={(e) => setYearFrom(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '14px 12px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '16px',
+                fontSize: '18px',
+                outline: 'none',
+                transition: 'all 0.2s',
+                backgroundColor: 'white',
+                boxSizing: 'border-box',
+                height: '56px'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#0f5c3e'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            />
+          </div>
+
+          <div style={{ flex: '0.5', minWidth: '100px' }}>
+            <input
+              type="number"
+              placeholder="Год до"
+              value={yearTo}
+              onChange={(e) => setYearTo(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '14px 12px',
+                border: '2px solid #e5e7eb',
+                borderRadius: '16px',
+                fontSize: '18px',
+                outline: 'none',
+                transition: 'all 0.2s',
+                backgroundColor: 'white',
+                boxSizing: 'border-box',
+                height: '56px'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#0f5c3e'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            />
+          </div>
         </div>
 
-        {(searchQuery || selectedCategory) && (
+        {(searchQuery || selectedCategory || yearFrom || yearTo) && (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={() => {
                 setSearchQuery('')
                 setSelectedCategory('')
+                setYearFrom('')
+                setYearTo('')
               }}
               style={{
                 padding: '10px 24px',
@@ -306,7 +366,6 @@ function CatalogPage() {
           backgroundColor: '#f8f9fa',
           borderRadius: '24px'
         }}>
-          <span style={{ fontSize: '64px', display: 'block', marginBottom: '16px' }}></span>
           <h3 style={{ fontSize: '20px', color: '#333', marginBottom: '8px' }}>Ничего не найдено</h3>
           <p style={{ color: '#666' }}>Попробуйте изменить параметры поиска</p>
         </div>
@@ -375,7 +434,7 @@ function CatalogPage() {
                     fontSize: '11px',
                     fontWeight: '600'
                   }}>
-                    На руках
+                    Забронировано
                   </div>
                 )}
               </div>
