@@ -1,6 +1,8 @@
 SET NAMES utf8mb4;
 SET CHARACTER SET utf8mb4;
 
+DROP TABLE IF EXISTS users;
+
 CREATE DATABASE IF NOT EXISTS library;
 USE library;
 
@@ -53,7 +55,7 @@ CREATE TABLE users (
     last_name VARCHAR(100),
     password_hash VARCHAR(255) NOT NULL,
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    role ENUM('USER', 'LIBRARIAN', 'ADMIN') DEFAULT 'USER',
+    role ENUM('ROLE_USER', 'ROLE_LIBRARIAN', 'ROLE_ADMIN') DEFAULT 'ROLE_USER',
     is_active BOOLEAN DEFAULT TRUE
 );
 
@@ -216,6 +218,12 @@ INSERT INTO book_authors (book_id, author_id) VALUES
 (37,29), -- 451 градус по Фаренгейту → Брэдбери
 (38,30); -- Лев, колдунья и платяной шкаф → Льюис
 
+INSERT INTO users (username, email, password_hash, role) VALUES
+('user1', 'user1@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
+('user2', 'user2@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
+('user3', 'user3@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
+('user5', 'user5@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER');
+
 INSERT INTO loans (book_id, user_id, loan_date, due_date, return_date, status) VALUES
 (1,1,'2026-04-01','2026-04-15','2026-04-14','RETURNED'),
 (4,2,'2026-04-05','2026-04-19',NULL,'ACTIVE'),
@@ -223,3 +231,4 @@ INSERT INTO loans (book_id, user_id, loan_date, due_date, return_date, status) V
 (8,5,'2026-03-20','2026-04-03',NULL,'OVERDUE'),
 (2,1,'2026-04-12','2026-04-26',NULL,'ACTIVE'),
 (3,3,'2026-04-08','2026-04-22','2026-04-20','RETURNED');
+
