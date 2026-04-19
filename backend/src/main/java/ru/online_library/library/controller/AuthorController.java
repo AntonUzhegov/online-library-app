@@ -17,8 +17,12 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuthorController {
 
-    @Autowired
-    private AuthorService authorService;
+
+    private final AuthorService authorService;
+
+    public AuthorController(AuthorService authorService) {
+        this.authorService = authorService;
+    }
 
     @GetMapping
     public ResponseEntity<List<AuthorDTO>> getAllAuthors() {

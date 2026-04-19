@@ -17,8 +17,12 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+
+    private final CategoryService categoryService;
+
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {

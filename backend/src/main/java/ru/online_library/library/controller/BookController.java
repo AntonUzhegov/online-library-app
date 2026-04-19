@@ -13,8 +13,11 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class BookController {
 
-    @Autowired
-    private BookService bookService;
+    private final BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
 
     @GetMapping
     public ResponseEntity<List<BookDTO>> getAllBooks(){
