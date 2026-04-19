@@ -45,4 +45,43 @@ public class BookService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+    public BookDTO getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
+        return convertToDTO(book);
+    }
+
+    public BookDTO addBook(BookDTO bookDTO) {
+        Book book = new Book();
+        // заполнить поля из DTO
+        // сохранить
+        return convertToDTO(bookRepository.save(book));
+    }
+
+
+    // Фильтрация по категории
+    public List<BookDTO> getBooksByCategory(Long categoryId) {
+        return bookRepository.findByCategories_Id(categoryId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Фильтрация по автору
+    public List<BookDTO> getBooksByAuthor(Long authorId) {
+        return bookRepository.findByAuthors_Id(authorId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<BookDTO> searchBooks(String query) {
+        return bookRepository
+                .findByTitleContainingIgnoreCaseOrAuthors_FirstNameContainingIgnoreCaseOrAuthors_LastNameContainingIgnoreCase(
+                        query, query, query)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 }

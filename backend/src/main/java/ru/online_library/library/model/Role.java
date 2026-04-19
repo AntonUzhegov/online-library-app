@@ -1,8 +1,8 @@
 package ru.online_library.library.model;
 
 public enum Role {
-    USER("Обычный пользователь"),
-    ADMIN("Администратор");
+    ROLE_USER("Обычный пользователь"),
+    ROLE_ADMIN("Администратор");
 
     private final String value;
 
@@ -15,12 +15,12 @@ public enum Role {
     }
 
     public static Role fromString(String text) {
-        if (text == null) return USER;
+        if (text == null) return ROLE_USER;
         for (Role role : Role.values()) {
             if (role.name().equalsIgnoreCase(text)) {
                 return role;
             }
         }
-        return USER;
+        return ROLE_USER;
     }
 }

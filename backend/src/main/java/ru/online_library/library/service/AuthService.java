@@ -1,11 +1,9 @@
 package ru.online_library.library.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.online_library.library.model.Role;
@@ -46,7 +44,7 @@ public class AuthService {
         User user = new User(username, email, passwordEncoder.encode(password));
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setRole(Role.USER);
+        user.setRole(Role.ROLE_USER);
         user.setRegistrationDate(LocalDateTime.now());
         user.setActive(true);
 
