@@ -33,12 +33,13 @@ function ProfilePage(): React.ReactNode {
   const [passwordSuccess, setPasswordSuccess] = useState<string>('')
   const [passwordLoading, setPasswordLoading] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/login')
-      return
-    }
+  // Если пользователь не авторизован — редирект на логин
+  if (!user) {
+    navigate('/login')
+    return null
+  }
 
+  useEffect(() => {
     const fetchProfile = async (): Promise<void> => {
       try {
         const response = await api.get('/users/me')
@@ -51,7 +52,7 @@ function ProfilePage(): React.ReactNode {
     }
 
     fetchProfile()
-  }, [user, navigate])
+  }, [])
 
   const handleChangePassword = async (): Promise<void> => {
     setPasswordError('')
@@ -93,6 +94,11 @@ function ProfilePage(): React.ReactNode {
     } finally {
       setPasswordLoading(false)
     }
+  }
+
+  const handleLogout = (): void => {
+    logout()
+    window.location.href = '/'
   }
 
   if (loading) {
@@ -292,7 +298,7 @@ function ProfilePage(): React.ReactNode {
             </button>
 
             <button 
-              onClick={logout}
+              onClick={handleLogout}
               style={{
                 width: '100%',
                 padding: '14px',

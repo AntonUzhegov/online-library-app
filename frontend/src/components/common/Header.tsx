@@ -1,9 +1,12 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
 
 function Header(): React.ReactElement {
-  const { user, logout } = useContext(AuthContext)
+  const { user } = useContext(AuthContext)
+  const location = useLocation()
+
+  const isActive = (path: string) => location.pathname === path
 
   return (
     <header style={{
@@ -20,9 +23,8 @@ function Header(): React.ReactElement {
       zIndex: 1000,
       backdropFilter: 'blur(10px)'
     }}>
-
       <div style={{
-        fontSize: '28px',
+        fontSize: '24px',
         fontWeight: '700',
         letterSpacing: '-0.5px',
         background: 'linear-gradient(135deg, #fff, #ffd966)',
@@ -34,150 +36,178 @@ function Header(): React.ReactElement {
         📚 Online Library
       </div>
 
-      <nav style={{ display: 'flex', gap: '40px', alignItems: 'center' }}>
+      <div style={{ 
+        position: 'absolute',
+        left: '85.1%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: '12px'
+      }}>
         <Link 
           to="/" 
           style={{ 
-            color: 'white', 
+            color: isActive('/') ? '#ffd966' : 'white', 
             textDecoration: 'none', 
-            fontSize: '18px',
-            fontWeight: '600',
-            padding: '10px 0',
-            position: 'relative',
-            transition: 'all 0.3s ease'
+            fontSize: '16px',
+            fontWeight: '500',
+            padding: '10px 24px',
+            borderRadius: '12px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            background: isActive('/') 
+              ? 'rgba(255, 217, 102, 0.15)' 
+              : 'rgba(255, 255, 255, 0.03)',
+            border: isActive('/')
+              ? '1px solid rgba(255, 217, 102, 0.5)'
+              : '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(5px)',
+            letterSpacing: '0.3px',
+            boxShadow: isActive('/')
+              ? '0 8px 20px rgba(255, 217, 102, 0.2)'
+              : 'none'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#ffd966'
-            e.currentTarget.style.transform = 'translateY(-2px)'
+            if (!isActive('/')) {
+              e.currentTarget.style.background = 'rgba(255, 217, 102, 0.15)'
+              e.currentTarget.style.border = '1px solid rgba(255, 217, 102, 0.5)'
+              e.currentTarget.style.color = '#ffd966'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 217, 102, 0.2)'
+            } else {
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'white'
+            if (!isActive('/')) {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+              e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)'
+              e.currentTarget.style.color = 'white'
+              e.currentTarget.style.boxShadow = 'none'
+            }
             e.currentTarget.style.transform = 'translateY(0)'
           }}
         >
           Главная
-          <span style={{
-            position: 'absolute',
-            bottom: '0',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '0',
-            height: '3px',
-            backgroundColor: '#ffd966',
-            transition: 'width 0.3s ease',
-            borderRadius: '3px'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.width = '70%'}
-          onMouseLeave={(e) => e.currentTarget.style.width = '0'} />
         </Link>
         
         <Link 
           to="/catalog" 
           style={{ 
-            color: 'white', 
+            color: isActive('/catalog') ? '#ffd966' : 'white', 
             textDecoration: 'none', 
-            fontSize: '18px',
-            fontWeight: '600',
-            padding: '10px 0',
-            position: 'relative',
-            transition: 'all 0.3s ease'
+            fontSize: '16px',
+            fontWeight: '500',
+            padding: '10px 24px',
+            borderRadius: '12px',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            background: isActive('/catalog') 
+              ? 'rgba(255, 217, 102, 0.15)' 
+              : 'rgba(255, 255, 255, 0.03)',
+            border: isActive('/catalog')
+              ? '1px solid rgba(255, 217, 102, 0.5)'
+              : '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(5px)',
+            letterSpacing: '0.3px',
+            boxShadow: isActive('/catalog')
+              ? '0 8px 20px rgba(255, 217, 102, 0.2)'
+              : 'none'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#ffd966'
-            e.currentTarget.style.transform = 'translateY(-2px)'
+            if (!isActive('/catalog')) {
+              e.currentTarget.style.background = 'rgba(255, 217, 102, 0.15)'
+              e.currentTarget.style.border = '1px solid rgba(255, 217, 102, 0.5)'
+              e.currentTarget.style.color = '#ffd966'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 217, 102, 0.2)'
+            } else {
+              e.currentTarget.style.transform = 'translateY(-2px)'
+            }
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'white'
+            if (!isActive('/catalog')) {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+              e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)'
+              e.currentTarget.style.color = 'white'
+              e.currentTarget.style.boxShadow = 'none'
+            }
             e.currentTarget.style.transform = 'translateY(0)'
           }}
         >
           Каталог
-          <span style={{
-            position: 'absolute',
-            bottom: '0',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '0',
-            height: '3px',
-            backgroundColor: '#ffd966',
-            transition: 'width 0.3s ease',
-            borderRadius: '3px'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.width = '70%'}
-          onMouseLeave={(e) => e.currentTarget.style.width = '0'} />
         </Link>
+      </div>
 
+      <nav style={{ display: 'flex', gap: '20px', alignItems: 'center', marginLeft: 'auto', marginRight: '-25px'}}>
         {user ? (
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            <Link to="/profile" style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'rgba(255,217,102,0.15)',
-              padding: '8px 20px',
-              borderRadius: '40px',
-              border: '1px solid rgba(255,217,102,0.3)',
-              color: 'white',
-              textDecoration: 'none',
-              transition: 'all 0.3s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,217,102,0.25)'
-              e.currentTarget.style.transform = 'scale(1.02)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,217,102,0.15)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}>
-              <span style={{ fontSize: '18px' }}>👤</span>
-              <span style={{ fontWeight: '500' }}>
-                {user.username || user.firstName || 'Читатель'}
-              </span>
-            </Link>
-            
-            <button onClick={logout} style={{
-              background: 'linear-gradient(135deg, #c0392b, #e74c3c)',
-              border: 'none',
-              color: 'white',
-              padding: '12px 32px',
-              borderRadius: '40px',
-              cursor: 'pointer',
+          <Link 
+            to="/profile" 
+            style={{ 
+              color: isActive('/profile') ? '#ffd966' : 'white', 
+              textDecoration: 'none', 
               fontSize: '16px',
-              fontWeight: '700',
-              transition: 'all 0.3s',
-              boxShadow: '0 4px 12px rgba(192,57,43,0.3)'
+              fontWeight: '500',
+              padding: '10px 24px',
+              borderRadius: '12px',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              background: isActive('/profile') 
+                ? 'rgba(255, 217, 102, 0.15)' 
+                : 'rgba(255, 255, 255, 0.03)',
+              border: isActive('/profile')
+                ? '1px solid rgba(255, 217, 102, 0.5)'
+                : '1px solid rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(5px)',
+              letterSpacing: '0.3px',
+              boxShadow: isActive('/profile')
+                ? '0 8px 20px rgba(255, 217, 102, 0.2)'
+                : 'none'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(192,57,43,0.4)'
+              if (!isActive('/profile')) {
+                e.currentTarget.style.background = 'rgba(255, 217, 102, 0.15)'
+                e.currentTarget.style.border = '1px solid rgba(255, 217, 102, 0.5)'
+                e.currentTarget.style.color = '#ffd966'
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 217, 102, 0.2)'
+              } else {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+              }
             }}
             onMouseLeave={(e) => {
+              if (!isActive('/profile')) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)'
+                e.currentTarget.style.color = 'white'
+                e.currentTarget.style.boxShadow = 'none'
+              }
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(192,57,43,0.3)'
-            }}>
-              Выйти
-            </button>
-          </div>
+            }}
+          >
+            Профиль
+          </Link>
         ) : (
-          <Link to="/login" style={{
-            background: 'linear-gradient(135deg, #27ae60, #2ecc71)',
-            padding: '8px 28px',
-            borderRadius: '40px',
-            color: 'white',
-            textDecoration: 'none',
-            fontWeight: '600',
-            fontSize: '15px',
-            transition: 'all 0.3s',
-            boxShadow: '0 4px 12px rgba(39,174,96,0.3)'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(39,174,96,0.4)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(39,174,96,0.3)'
-          }}>
+          <Link 
+            to="/login" 
+            style={{
+              background: 'transparent',
+              padding: '8px 24px',
+              borderRadius: '30px',
+              color: '#ffd966',
+              textDecoration: 'none',
+              fontWeight: '500',
+              fontSize: '14px',
+              transition: 'all 0.2s ease',
+              border: '1.5px solid #ffd966'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#ffd966'
+              e.currentTarget.style.color = '#1a472a'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = '#ffd966'
+              e.currentTarget.style.transform = 'translateY(0)'
+            }}
+          >
             Войти
           </Link>
         )}
