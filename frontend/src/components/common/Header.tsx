@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useContext } from 'react'
 import { AuthContext } from '../../context/AuthContext'
 
-function Header() {
+function Header(): React.ReactElement {
   const { user, logout } = useContext(AuthContext)
 
   return (
@@ -47,12 +47,12 @@ function Header() {
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
-            e.target.style.color = '#ffd966'
-            e.target.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.color = '#ffd966'
+            e.currentTarget.style.transform = 'translateY(-2px)'
           }}
           onMouseLeave={(e) => {
-            e.target.style.color = 'white'
-            e.target.style.transform = 'translateY(0)'
+            e.currentTarget.style.color = 'white'
+            e.currentTarget.style.transform = 'translateY(0)'
           }}
         >
           Главная
@@ -67,8 +67,8 @@ function Header() {
             transition: 'width 0.3s ease',
             borderRadius: '3px'
           }}
-          onMouseEnter={(e) => e.target.style.width = '70%'}
-          onMouseLeave={(e) => e.target.style.width = '0'} />
+          onMouseEnter={(e) => e.currentTarget.style.width = '70%'}
+          onMouseLeave={(e) => e.currentTarget.style.width = '0'} />
         </Link>
         
         <Link 
@@ -83,12 +83,12 @@ function Header() {
             transition: 'all 0.3s ease'
           }}
           onMouseEnter={(e) => {
-            e.target.style.color = '#ffd966'
-            e.target.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.color = '#ffd966'
+            e.currentTarget.style.transform = 'translateY(-2px)'
           }}
           onMouseLeave={(e) => {
-            e.target.style.color = 'white'
-            e.target.style.transform = 'translateY(0)'
+            e.currentTarget.style.color = 'white'
+            e.currentTarget.style.transform = 'translateY(0)'
           }}
         >
           Каталог
@@ -103,8 +103,8 @@ function Header() {
             transition: 'width 0.3s ease',
             borderRadius: '3px'
           }}
-          onMouseEnter={(e) => e.target.style.width = '70%'}
-          onMouseLeave={(e) => e.target.style.width = '0'} />
+          onMouseEnter={(e) => e.currentTarget.style.width = '70%'}
+          onMouseLeave={(e) => e.currentTarget.style.width = '0'} />
         </Link>
 
         {user ? (
@@ -148,12 +148,12 @@ function Header() {
               boxShadow: '0 4px 12px rgba(192,57,43,0.3)'
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)'
-              e.target.style.boxShadow = '0 6px 16px rgba(192,57,43,0.4)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(192,57,43,0.4)'
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)'
-              e.target.style.boxShadow = '0 4px 12px rgba(192,57,43,0.3)'
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(192,57,43,0.3)'
             }}>
               Выйти
             </button>
@@ -171,12 +171,12 @@ function Header() {
             boxShadow: '0 4px 12px rgba(39,174,96,0.3)'
           }}
           onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-2px)'
-            e.target.style.boxShadow = '0 6px 16px rgba(39,174,96,0.4)'
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(39,174,96,0.4)'
           }}
           onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)'
-            e.target.style.boxShadow = '0 4px 12px rgba(39,174,96,0.3)'
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(39,174,96,0.3)'
           }}>
             Войти
           </Link>

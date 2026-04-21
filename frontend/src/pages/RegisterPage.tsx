@@ -3,19 +3,27 @@ import { useNavigate, Link } from 'react-router-dom'
 import AuthLayout from '../components/auth/AuthLayout'
 import api from '../service/api'
 
-function RegisterPage() {
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [loading, setLoading] = useState(false)
+function RegisterPage(): React.ReactElement {
+  const [username, setUsername] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [firstName, setFirstName] = useState<string>('')
+  const [lastName, setLastName] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [error, setError] = useState<string>('')
+  const [success, setSuccess] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
+  interface ErrorResponse {
+    response?: {
+      data?: {
+        error?: string
+      }
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     setError('')
     setSuccess('')
@@ -58,25 +66,26 @@ function RegisterPage() {
     }
 
     try {
-        await api.post('/auth/register', {
-            username,
-            email,
-            password,
-            firstName,
-            lastName
-        })
-        
-        setSuccess('Регистрация прошла успешно!')
-        
-        setTimeout(() => {
-            navigate('/login')
-        }, 2000)
-    } catch (err) {
-        setError(err.response?.data?.error || 'Ошибка регистрации')
+      await api.post('/auth/register', {
+        username,
+        email,
+        password,
+        firstName,
+        lastName
+      })
+      
+      setSuccess('Регистрация прошла успешно!')
+      
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000)
+    } catch (err: unknown) {
+      const error = err as ErrorResponse
+      setError(error.response?.data?.error || 'Ошибка регистрации')
     } finally {
-        setLoading(false)
+      setLoading(false)
     }
-}
+  }
 
   return (
     <AuthLayout title="Создать аккаунт" subtitle="Присоединяйтесь к нашей библиотеке">
@@ -126,7 +135,7 @@ function RegisterPage() {
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
             required
             style={{
               width: '100%',
@@ -139,12 +148,12 @@ function RegisterPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -167,7 +176,7 @@ function RegisterPage() {
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             required
             style={{
               width: '100%',
@@ -180,12 +189,12 @@ function RegisterPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -208,7 +217,7 @@ function RegisterPage() {
           <input
             type="text"
             value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
             required
             style={{
               width: '100%',
@@ -221,12 +230,12 @@ function RegisterPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -249,7 +258,7 @@ function RegisterPage() {
           <input
             type="text"
             value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
             required
             style={{
               width: '100%',
@@ -262,12 +271,12 @@ function RegisterPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -290,7 +299,7 @@ function RegisterPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             required
             style={{
               width: '100%',
@@ -303,12 +312,12 @@ function RegisterPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -331,7 +340,7 @@ function RegisterPage() {
           <input
             type="password"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
             required
             style={{
               width: '100%',
@@ -344,12 +353,12 @@ function RegisterPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -376,16 +385,16 @@ function RegisterPage() {
             boxShadow: '0 4px 14px rgba(26,122,82,0.3)',
             opacity: loading ? 0.7 : 1
           }}
-          onMouseEnter={(e) => {
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!loading) {
-              e.target.style.transform = 'translateY(-2px)'
-              e.target.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
             }
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!loading) {
-              e.target.style.transform = 'translateY(0)'
-              e.target.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
             }
           }}
         >
@@ -406,8 +415,8 @@ function RegisterPage() {
             fontWeight: '700',
             transition: '0.3s'
           }}
-          onMouseEnter={(e) => e.target.style.color = '#0f5c3e'}
-          onMouseLeave={(e) => e.target.style.color = '#1a7a52'}>
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#0f5c3e'}
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#1a7a52'}>
             Войти
           </Link>
         </p>

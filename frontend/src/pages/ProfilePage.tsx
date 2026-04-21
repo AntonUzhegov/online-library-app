@@ -3,19 +3,35 @@ import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import api from '../service/api'
 
-function ProfilePage() {
+interface ProfileData {
+  username: string
+  email: string
+  firstName: string | null
+  lastName: string | null
+  registrationDate: string | null
+}
+
+interface ErrorResponse {
+  response?: {
+    data?: {
+      error?: string
+    }
+  }
+}
+
+function ProfilePage(): React.ReactNode {
   const { user, logout } = useContext(AuthContext)
   const navigate = useNavigate()
-  const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [showPasswordModal, setShowPasswordModal] = useState(false)
-  const [oldPassword, setOldPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [passwordError, setPasswordError] = useState('')
-  const [passwordSuccess, setPasswordSuccess] = useState('')
-  const [passwordLoading, setPasswordLoading] = useState(false)
+  const [profile, setProfile] = useState<ProfileData | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string>('')
+  const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false)
+  const [oldPassword, setOldPassword] = useState<string>('')
+  const [newPassword, setNewPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [passwordError, setPasswordError] = useState<string>('')
+  const [passwordSuccess, setPasswordSuccess] = useState<string>('')
+  const [passwordLoading, setPasswordLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (!user) {
@@ -23,10 +39,10 @@ function ProfilePage() {
       return
     }
 
-    const fetchProfile = async () => {
+    const fetchProfile = async (): Promise<void> => {
       try {
         const response = await api.get('/users/me')
-        setProfile(response.data)
+        setProfile(response.data as ProfileData)
       } catch {
         setError('Ошибка загрузки профиля')
       } finally {
@@ -37,7 +53,7 @@ function ProfilePage() {
     fetchProfile()
   }, [user, navigate])
 
-  const handleChangePassword = async () => {
+  const handleChangePassword = async (): Promise<void> => {
     setPasswordError('')
     setPasswordSuccess('')
     setPasswordLoading(true)
@@ -59,7 +75,7 @@ function ProfilePage() {
         oldPassword,
         newPassword
       }, {
-        params: { username: user.username }
+        params: { username: user?.username }
       })
 
       setPasswordSuccess('Пароль успешно изменён!')
@@ -71,8 +87,9 @@ function ProfilePage() {
         setShowPasswordModal(false)
         setPasswordSuccess('')
       }, 1500)
-    } catch (err) {
-      setPasswordError(err.response?.data?.error || 'Ошибка смены пароля')
+    } catch (err: unknown) {
+      const error = err as ErrorResponse
+      setPasswordError(error.response?.data?.error || 'Ошибка смены пароля')
     } finally {
       setPasswordLoading(false)
     }
@@ -109,7 +126,7 @@ function ProfilePage() {
 
   if (!profile) return null
 
-  const infoItems = [
+  const infoItems: { label: string; value: string }[] = [
     { label: 'Логин', value: profile.username },
     { label: 'Email', value: profile.email },
     { label: 'Имя', value: profile.firstName || '—' },
@@ -148,13 +165,13 @@ function ProfilePage() {
         zIndex: 10,
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
       }}
-      onMouseEnter={(e) => {
-        e.target.style.backgroundColor = '#1a7a52'
-        e.target.style.transform = 'translateX(-3px)'
+      onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.currentTarget.style.backgroundColor = '#1a7a52'
+        e.currentTarget.style.transform = 'translateX(-3px)'
       }}
-      onMouseLeave={(e) => {
-        e.target.style.backgroundColor = '#0f5c3e'
-        e.target.style.transform = 'translateX(0)'
+      onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.currentTarget.style.backgroundColor = '#0f5c3e'
+        e.currentTarget.style.transform = 'translateX(0)'
       }}>
         ← Назад
       </Link>
@@ -218,11 +235,11 @@ function ProfilePage() {
                   padding: '16px',
                   transition: 'transform 0.2s'
                 }}
-                onMouseEnter={(e) => {
+                onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.currentTarget.style.transform = 'translateY(-3px)'
                   e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'
                 }}
-                onMouseLeave={(e) => {
+                onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.currentTarget.style.transform = 'translateY(0)'
                   e.currentTarget.style.boxShadow = 'none'
                 }}>
@@ -262,13 +279,13 @@ function ProfilePage() {
                 cursor: 'pointer',
                 transition: 'all 0.3s'
               }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#0f5c3e'
-                e.target.style.color = 'white'
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = '#0f5c3e'
+                e.currentTarget.style.color = 'white'
               }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent'
-                e.target.style.color = '#0f5c3e'
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = '#0f5c3e'
               }}
             >
               Сменить пароль
@@ -288,13 +305,13 @@ function ProfilePage() {
                 cursor: 'pointer',
                 transition: 'all 0.3s'
               }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#c0392b'
-                e.target.style.color = 'white'
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = '#c0392b'
+                e.currentTarget.style.color = 'white'
               }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent'
-                e.target.style.color = '#c0392b'
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = '#c0392b'
               }}
             >
               Выйти из аккаунта
@@ -323,7 +340,7 @@ function ProfilePage() {
             maxWidth: '400px',
             width: '90%',
             position: 'relative'
-          }} onClick={(e) => e.stopPropagation()}>
+          }} onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
             
             <h2 style={{ fontSize: '24px', marginBottom: '20px', color: '#0a3b2a' }}>
               Смена пароля
@@ -359,7 +376,7 @@ function ProfilePage() {
               type="password"
               placeholder="Старый пароль"
               value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOldPassword(e.target.value)}
               style={{
                 width: '100%',
                 padding: '12px',
@@ -375,7 +392,7 @@ function ProfilePage() {
               type="password"
               placeholder="Новый пароль (минимум 6 символов)"
               value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value)}
               style={{
                 width: '100%',
                 padding: '12px',
@@ -391,7 +408,7 @@ function ProfilePage() {
               type="password"
               placeholder="Подтвердите новый пароль"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
               style={{
                 width: '100%',
                 padding: '12px',
@@ -419,14 +436,14 @@ function ProfilePage() {
                   cursor: passwordLoading ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={(e) => {
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!passwordLoading) {
-                    e.target.style.backgroundColor = '#1a7a52'
+                    e.currentTarget.style.backgroundColor = '#1a7a52'
                   }
                 }}
-                onMouseLeave={(e) => {
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!passwordLoading) {
-                    e.target.style.backgroundColor = '#0f5c3e'
+                    e.currentTarget.style.backgroundColor = '#0f5c3e'
                   }
                 }}
               >
@@ -453,11 +470,11 @@ function ProfilePage() {
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#ccc'
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = '#ccc'
                 }}
-                onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#e0e0e0'
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = '#e0e0e0'
                 }}
               >
                 Отмена

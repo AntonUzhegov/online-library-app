@@ -6,12 +6,12 @@ import HomePage from './pages/HomePage'
 import CatalogPage from './pages/CatalogPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import ProfilePage from './pages/ProfilePage'     
+import ProfilePage from './pages/ProfilePage'
 
-function AppContent() {
+function AppContent(): React.ReactElement {
   const location = useLocation()
   
-  const hideHeader = location.pathname === '/login' || 
+  const hideHeader: boolean = location.pathname === '/login' || 
                      location.pathname === '/register' ||
                      location.pathname === '/profile'
 
@@ -31,7 +31,7 @@ function AppContent() {
   )
 }
 
-function App() {
+function App(): React.ReactElement {
   return (
     <Router>
       <AuthProvider>

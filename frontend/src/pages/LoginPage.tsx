@@ -3,36 +3,46 @@ import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
 import AuthLayout from '../components/auth/AuthLayout'
 import api from '../service/api'
+import { User } from '../types'
 
-function LoginPage() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+function LoginPage(): React.ReactElement {
+  const [username, setUsername] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [error, setError] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
   const { login } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
+  interface ErrorResponse {
+    response?: {
+      data?: {
+        error?: string
+      }
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
     try {
-        const response = await api.post('/auth/login', { username, password })
-        const { token } = response.data
+      const response = await api.post('/auth/login', { username, password })
+      const { token } = response.data as { token: string }
 
-        localStorage.setItem('token', token)
+      localStorage.setItem('token', token)
 
-        const userResponse = await api.get('/users/me')
-        login(userResponse.data)
+      const userResponse = await api.get('/users/me')
+      login(userResponse.data as User)
 
-        navigate('/')
-    } catch (err) {
-        setError(err.response?.data?.error || 'Ошибка входа')
+      navigate('/')
+    } catch (err: unknown) {
+      const error = err as ErrorResponse
+      setError(error.response?.data?.error || 'Ошибка входа')
     } finally {
-        setLoading(false)
+      setLoading(false)
     }
-}
+  }
 
   return (
     <AuthLayout title="Добро пожаловать!" subtitle="Войдите в свою библиотеку">
@@ -67,7 +77,7 @@ function LoginPage() {
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
             required
             style={{
               width: '100%',
@@ -80,12 +90,12 @@ function LoginPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -108,7 +118,7 @@ function LoginPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
             required
             style={{
               width: '100%',
@@ -121,12 +131,12 @@ function LoginPage() {
               boxSizing: 'border-box',
               backgroundColor: '#fafafa'
             }}
-            onFocus={(e) => {
+            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#1a7a52'
               e.target.style.backgroundColor = 'white'
               e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
             }}
-            onBlur={(e) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               e.target.style.borderColor = '#e5e7eb'
               e.target.style.backgroundColor = '#fafafa'
               e.target.style.boxShadow = 'none'
@@ -153,16 +163,16 @@ function LoginPage() {
             boxShadow: '0 4px 14px rgba(26,122,82,0.3)',
             opacity: loading ? 0.7 : 1
           }}
-          onMouseEnter={(e) => {
+          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!loading) {
-              e.target.style.transform = 'translateY(-2px)'
-              e.target.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+              e.currentTarget.style.transform = 'translateY(-2px)'
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
             }
           }}
-          onMouseLeave={(e) => {
+          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!loading) {
-              e.target.style.transform = 'translateY(0)'
-              e.target.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
             }
           }}
         >
@@ -183,8 +193,8 @@ function LoginPage() {
             fontWeight: '700',
             transition: '0.3s'
           }}
-          onMouseEnter={(e) => e.target.style.color = '#0f5c3e'}
-          onMouseLeave={(e) => e.target.style.color = '#1a7a52'}>
+          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#0f5c3e'}
+          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#1a7a52'}>
             Зарегистрироваться
           </Link>
         </p>
