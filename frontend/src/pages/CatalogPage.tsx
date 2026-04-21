@@ -120,7 +120,7 @@ function CatalogPage(): React.ReactElement {
 
   return (
     <div style={{
-      maxWidth: '1200px',
+      maxWidth: '1400px',
       margin: '0 auto',
       padding: '40px 20px',
       fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif"
@@ -382,7 +382,7 @@ function CatalogPage(): React.ReactElement {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(5, 1fr)',  // ← ИЗМЕНЕНО: теперь 5 книг в строке
           gap: '28px'
         }}>
           {books.map(book => (
