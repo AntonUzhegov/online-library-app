@@ -1,4 +1,4 @@
-function HomePage() {
+function HomePage(): React.ReactElement {
   return (
     <div style={{
       display: 'flex',

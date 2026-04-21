@@ -1,10 +1,19 @@
+import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 
-function AuthLayout({ children, title, subtitle }) {
+interface AuthLayoutProps {
+  children: ReactNode
+  title: string
+  subtitle: string
+}
+
+function AuthLayout({ children, title, subtitle }: AuthLayoutProps): React.ReactElement {
   return (
     <div style={{
       minHeight: '100vh',
       width: '100%',
+      margin: 0,
+      padding: 0,
       backgroundColor: '#f5f5f5',
       fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif",
       position: 'relative',
@@ -26,8 +35,8 @@ function AuthLayout({ children, title, subtitle }) {
         transition: '0.3s',
         zIndex: 10
       }}
-      onMouseEnter={(e) => e.target.style.backgroundColor = '#1a7a52'}
-      onMouseLeave={(e) => e.target.style.backgroundColor = '#0f5c3e'}>
+      onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.backgroundColor = '#1a7a52'}
+      onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.backgroundColor = '#0f5c3e'}>
         ← Назад
       </Link>
 

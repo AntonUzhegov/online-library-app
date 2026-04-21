@@ -1,26 +1,35 @@
 import { useState, useEffect, useRef } from 'react'
 import api from '../service/api'
+import { Book, Category } from '../types'
 
-function CatalogPage() {
-  const [books, setBooks] = useState([])
-  const [initialLoading, setInitialLoading] = useState(true)
-  const [error, setError] = useState('')
+interface ErrorResponse {
+  response?: {
+    data?: {
+      error?: string
+    }
+  }
+}
+
+function CatalogPage(): React.ReactElement {
+  const [books, setBooks] = useState<Book[]>([])
+  const [initialLoading, setInitialLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string>('')
   
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [yearFrom, setYearFrom] = useState('')
-  const [yearTo, setYearTo] = useState('')
-  const [selectedBook, setSelectedBook] = useState(null)
+  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('')
+  const [yearFrom, setYearFrom] = useState<string>('')
+  const [yearTo, setYearTo] = useState<string>('')
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false)
-  const [categories, setCategories] = useState([])
-  const categoryDropdownRef = useRef(null)
+  const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const categoryDropdownRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     fetchCategories()
     
-    const handleClickOutside = (event) => {
-      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
         setIsCategoryOpen(false)
       }
     }
@@ -32,16 +41,16 @@ function CatalogPage() {
     fetchBooks()
   }, [searchQuery, selectedCategory, yearFrom, yearTo])
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (): Promise<void> => {
     try {
       const response = await api.get('/categories')
-      setCategories(response.data)
+      setCategories(response.data as Category[])
     } catch (err) {
       console.error('Ошибка загрузки категорий')
     }
   }
 
-  const fetchBooks = async () => {
+  const fetchBooks = async (): Promise<void> => {
     try {
       let url = '/books'
       const params = new URLSearchParams()
@@ -62,22 +71,23 @@ function CatalogPage() {
       
       const response = await api.get(url, { params })
       
-      const sortedBooks = [...response.data].sort((a, b) => {
+      const sortedBooks: Book[] = [...(response.data as Book[])].sort((a, b) => {
         if (a.available === b.available) return 0
         return a.available ? -1 : 1
       })
       
       setBooks(sortedBooks)
-    } catch (err) {
-      setError('Ошибка загрузки книг')
+    } catch (err: unknown) {
+      const error = err as ErrorResponse
+      setError(error.response?.data?.error || 'Ошибка загрузки книг')
     } finally {
       setInitialLoading(false)
     }
   }
 
-  const handleBookClick = (book) => setSelectedBook(book)
-  const closeModal = () => setSelectedBook(null)
-  const handleReserve = () => alert('Функция бронирования будет добавлена позже')
+  const handleBookClick = (book: Book): void => setSelectedBook(book)
+  const closeModal = (): void => setSelectedBook(null)
+  const handleReserve = (): void => alert('Функция бронирования будет добавлена позже')
 
   if (initialLoading) {
     return (
@@ -146,7 +156,7 @@ function CatalogPage() {
               type="text"
               placeholder="Поиск..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
                 padding: '14px 18px',
@@ -159,8 +169,8 @@ function CatalogPage() {
                 boxSizing: 'border-box',
                 height: '56px'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#0f5c3e'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#0f5c3e'}
+              onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
           
@@ -221,11 +231,11 @@ function CatalogPage() {
                     backgroundColor: selectedCategory === '' ? '#f0f2f5' : 'white',
                     fontWeight: selectedCategory === '' ? '600' : '400'
                   }}
-                  onMouseEnter={(e) => {
-                    if (selectedCategory !== '') e.target.style.backgroundColor = '#f8f9fa'
+                  onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+                    if (selectedCategory !== '') e.currentTarget.style.backgroundColor = '#f8f9fa'
                   }}
-                  onMouseLeave={(e) => {
-                    if (selectedCategory !== '') e.target.style.backgroundColor = 'white'
+                  onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+                    if (selectedCategory !== '') e.currentTarget.style.backgroundColor = 'white'
                   }}
                 >
                   Все категории
@@ -244,11 +254,11 @@ function CatalogPage() {
                       backgroundColor: selectedCategory === cat.name ? '#f0f2f5' : 'white',
                       fontWeight: selectedCategory === cat.name ? '600' : '400'
                     }}
-                    onMouseEnter={(e) => {
-                      if (selectedCategory !== cat.name) e.target.style.backgroundColor = '#f8f9fa'
+                    onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
+                      if (selectedCategory !== cat.name) e.currentTarget.style.backgroundColor = '#f8f9fa'
                     }}
-                    onMouseLeave={(e) => {
-                      if (selectedCategory !== cat.name) e.target.style.backgroundColor = 'white'
+                    onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
+                      if (selectedCategory !== cat.name) e.currentTarget.style.backgroundColor = 'white'
                     }}
                   >
                     {cat.name}
@@ -263,7 +273,7 @@ function CatalogPage() {
               type="number"
               placeholder="Год от"
               value={yearFrom}
-              onChange={(e) => setYearFrom(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYearFrom(e.target.value)}
               style={{
                 width: '100%',
                 padding: '14px 12px',
@@ -276,8 +286,8 @@ function CatalogPage() {
                 boxSizing: 'border-box',
                 height: '56px'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#0f5c3e'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#0f5c3e'}
+              onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
 
@@ -286,7 +296,7 @@ function CatalogPage() {
               type="number"
               placeholder="Год до"
               value={yearTo}
-              onChange={(e) => setYearTo(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYearTo(e.target.value)}
               style={{
                 width: '100%',
                 padding: '14px 12px',
@@ -299,8 +309,8 @@ function CatalogPage() {
                 boxSizing: 'border-box',
                 height: '56px'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#0f5c3e'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#0f5c3e'}
+              onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
         </div>
@@ -325,13 +335,13 @@ function CatalogPage() {
                 cursor: 'pointer',
                 transition: 'all 0.2s'
               }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#0f5c3e'
-                e.target.style.color = 'white'
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = '#0f5c3e'
+                e.currentTarget.style.color = 'white'
               }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = 'transparent'
-                e.target.style.color = '#0f5c3e'
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = '#0f5c3e'
               }}
             >
               Сбросить фильтры
@@ -387,11 +397,11 @@ function CatalogPage() {
                 transition: 'all 0.3s cubic-bezier(0.2, 0, 0, 1)',
                 cursor: 'pointer'
               }}
-              onMouseEnter={(e) => {
+              onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                 e.currentTarget.style.transform = 'translateY(-8px)'
                 e.currentTarget.style.boxShadow = '0 16px 32px rgba(0,0,0,0.12)'
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
                 e.currentTarget.style.transform = 'translateY(0)'
                 e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.08)'
               }}
@@ -415,8 +425,8 @@ function CatalogPage() {
                       objectFit: 'cover',
                       transition: 'transform 0.3s'
                     }}
-                    onError={(e) => {
-                      e.target.src = '/covers/default.jpg'
+                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                      e.currentTarget.src = '/covers/default.jpg'
                     }}
                   />
                 ) : (
@@ -502,7 +512,7 @@ function CatalogPage() {
             maxHeight: '85vh',
             overflow: 'auto',
             position: 'relative'
-          }} onClick={(e) => e.stopPropagation()}>
+          }} onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}>
             
             <button
               onClick={closeModal}
@@ -520,13 +530,13 @@ function CatalogPage() {
                 color: '#666',
                 transition: 'all 0.2s'
               }}
-              onMouseEnter={(e) => {
-                e.target.style.backgroundColor = '#e0e0e0'
-                e.target.style.color = '#333'
+              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = '#e0e0e0'
+                e.currentTarget.style.color = '#333'
               }}
-              onMouseLeave={(e) => {
-                e.target.style.backgroundColor = '#f0f2f5'
-                e.target.style.color = '#666'
+              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.currentTarget.style.backgroundColor = '#f0f2f5'
+                e.currentTarget.style.color = '#666'
               }}
             >
               ✕
@@ -547,8 +557,8 @@ function CatalogPage() {
                       borderRadius: '16px',
                       boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
                     }}
-                    onError={(e) => {
-                      e.target.src = '/covers/default.jpg'
+                    onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                      e.currentTarget.src = '/covers/default.jpg'
                     }}
                   />
                 ) : (
@@ -639,16 +649,16 @@ function CatalogPage() {
                     transition: 'all 0.2s',
                     boxShadow: selectedBook.available ? '0 4px 12px rgba(15,92,62,0.3)' : 'none'
                   }}
-                  onMouseEnter={(e) => {
+                  onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
                     if (selectedBook.available) {
-                      e.target.style.backgroundColor = '#1a7a52'
-                      e.target.style.transform = 'translateY(-2px)'
+                      e.currentTarget.style.backgroundColor = '#1a7a52'
+                      e.currentTarget.style.transform = 'translateY(-2px)'
                     }
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
                     if (selectedBook.available) {
-                      e.target.style.backgroundColor = '#0f5c3e'
-                      e.target.style.transform = 'translateY(0)'
+                      e.currentTarget.style.backgroundColor = '#0f5c3e'
+                      e.currentTarget.style.transform = 'translateY(0)'
                     }
                   }}
                 >
