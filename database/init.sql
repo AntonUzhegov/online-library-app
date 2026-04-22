@@ -129,7 +129,7 @@ INSERT INTO books (title, isbn, publication_year, publisher, available, cover_im
 ('Война и мир', '9780199232765', 1869, 'The Russian Messenger', TRUE, '/covers/war_and_peace.jpg'),
 ('Анна Каренина', '9780143035008', 1877, 'The Russian Messenger', TRUE, '/covers/anna_karenina.jpg'),
 ('Мастер и Маргарита', '9780143108276', 1967, 'YMCA Press', TRUE, '/covers/master_and_margarita.jpg'),
-('Великий Гэтсби', '9780743273565', 1925, 'Charles Scribners Sons', TRUE, '/covers/great_gatsby.jpg'),
+('Великий Гэтсби', '9780743273565', 1925, 'Charles Scribner''s Sons', TRUE, '/covers/great_gatsby.jpg'),
 ('Моби Дик', '9781503280786', 1851, 'Harper & Brothers', TRUE, '/covers/moby_dick.jpg'),
 ('Гарри Поттер и философский камень', '9780439708180', 1997, 'Bloomsbury', TRUE, '/covers/harry_potter_1.jpg'),
 ('Гарри Поттер и Тайная комната', '9780439064873', 1998, 'Bloomsbury', TRUE, '/covers/harry_potter_2.jpg'),
