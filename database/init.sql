@@ -71,14 +71,14 @@ CREATE TABLE loans (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
-INSERT INTO categories (name) VALUES 
-('Художественная литература'), 
-('Научная фантастика'), 
-('Фэнтези'), 
-('Детектив'), 
-('Биография'), 
-('История'), 
-('Программирование'), 
+INSERT INTO categories (name) VALUES
+('Художественная литература'),
+('Научная фантастика'),
+('Фэнтези'),
+('Детектив'),
+('Биография'),
+('История'),
+('Программирование'),
 ('Дизайн');
 
 INSERT INTO authors (first_name, last_name, middle_name, birth_date) VALUES
@@ -129,7 +129,7 @@ INSERT INTO books (title, isbn, publication_year, publisher, available, cover_im
 ('Война и мир', '9780199232765', 1869, 'The Russian Messenger', TRUE, '/covers/war_and_peace.jpg'),
 ('Анна Каренина', '9780143035008', 1877, 'The Russian Messenger', TRUE, '/covers/anna_karenina.jpg'),
 ('Мастер и Маргарита', '9780143108276', 1967, 'YMCA Press', TRUE, '/covers/master_and_margarita.jpg'),
-('Великий Гэтсби', '9780743273565', 1925, 'Charles Scribner\'s Sons', TRUE, '/covers/great_gatsby.jpg'),
+('Великий Гэтсби', '9780743273565', 1925, 'Charles Scribners Sons', TRUE, '/covers/great_gatsby.jpg'),
 ('Моби Дик', '9781503280786', 1851, 'Harper & Brothers', TRUE, '/covers/moby_dick.jpg'),
 ('Гарри Поттер и философский камень', '9780439708180', 1997, 'Bloomsbury', TRUE, '/covers/harry_potter_1.jpg'),
 ('Гарри Поттер и Тайная комната', '9780439064873', 1998, 'Bloomsbury', TRUE, '/covers/harry_potter_2.jpg'),
@@ -154,8 +154,6 @@ INSERT INTO books (title, isbn, publication_year, publisher, available, cover_im
 ('О дивный новый мир', '9780060850524', 1932, 'Chatto & Windus', TRUE, '/covers/brave_new_world.jpg'),
 ('451 градус по Фаренгейту', '9781451673319', 1953, 'Ballantine Books', TRUE, '/covers/fahrenheit_451.jpg'),
 ('Лев, колдунья и платяной шкаф', '9780064471046', 1950, 'Geoffrey Bles', TRUE, '/covers/narnia.jpg');
-
-
 
 INSERT INTO books_categories (book_id, category_id) VALUES
 (1,1),(1,2),   -- 1984: Художественная, Научная фантастика
@@ -224,11 +222,12 @@ INSERT INTO users (username, email, password_hash, role) VALUES
 ('user3', 'user3@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
 ('user5', 'user5@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER');
 
+
 INSERT INTO loans (book_id, user_id, loan_date, due_date, return_date, status) VALUES
-(1,1,'2026-04-01','2026-04-15','2026-04-14','RETURNED'),
-(4,2,'2026-04-05','2026-04-19',NULL,'ACTIVE'),
-(6,2,'2026-04-10','2026-04-24',NULL,'ACTIVE'),
-(8,5,'2026-03-20','2026-04-03',NULL,'OVERDUE'),
-(2,1,'2026-04-12','2026-04-26',NULL,'ACTIVE'),
-(3,3,'2026-04-08','2026-04-22','2026-04-20','RETURNED');
+(1, 1, '2026-04-01', '2026-04-15', '2026-04-14', 'RETURNED'),
+(4, 2, '2026-04-05', '2026-04-19', NULL, 'ACTIVE'),
+(6, 2, '2026-04-10', '2026-04-24', NULL, 'ACTIVE'),
+(8, 4, '2026-03-20', '2026-04-03', NULL, 'OVERDUE'),
+(2, 1, '2026-04-12', '2026-04-26', NULL, 'ACTIVE'),
+(3, 3, '2026-04-08', '2026-04-22', '2026-04-20', 'RETURNED');
 
