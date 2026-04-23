@@ -3,9 +3,11 @@ package ru.online_library.library.service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.online_library.library.exception.UnauthorizedException;
 import ru.online_library.library.model.Role;
 import ru.online_library.library.model.User;
 import ru.online_library.library.repository.UserRepository;
@@ -52,13 +54,15 @@ public class AuthService {
     }
 
     public String authenticate(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return jwtUtils.generateJwtToken(authentication);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return jwtUtils.generateJwtToken(authentication);
+        } catch (AuthenticationException e) {
+            throw new UnauthorizedException("Неверный логин или пароль");
+        }
     }
 
     public User getCurrentUser() {

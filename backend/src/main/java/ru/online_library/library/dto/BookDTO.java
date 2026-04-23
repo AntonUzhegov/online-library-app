@@ -14,22 +14,24 @@ public class BookDTO {
     private String coverImage;
     private Set<String> authors;
     private Set<String> categories;
+    private String borrowedBy;  // ФИО пользователя, который взял книгу (null если доступна)
 
     public BookDTO(){}
 
     public BookDTO(Long id, String title, String isbn,
                    Integer publicationYear, String publisher,
-                   boolean available, String coverImages,
-                   Set<String> authors, Set<String> categories) {
+                   boolean available, String coverImage,
+                   Set<String> authors, Set<String> categories, String borrowedBy) {
         this.id = id;
         this.title = title;
         this.isbn = isbn;
         this.publicationYear = publicationYear;
         this.publisher = publisher;
         this.available = available;
-        this.coverImage = coverImages;
+        this.coverImage = coverImage;
         this.authors = authors;
         this.categories = categories;
+        this.borrowedBy = borrowedBy;
     }
 
     public Long getId() {
@@ -93,5 +95,12 @@ public class BookDTO {
     }
     public void setCategories(Set<String> categories) {
         this.categories = categories;
+    }
+
+    public String getBorrowedBy() {
+        return borrowedBy;
+    }
+    public void setBorrowedBy(String borrowedBy) {
+        this.borrowedBy = borrowedBy;
     }
 }

@@ -23,4 +23,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // Фильтрация по доступности
     List<Book> findByAvailable(Boolean available);
+
+    List<Book> findAllByOrderByAvailableDesc();
 }

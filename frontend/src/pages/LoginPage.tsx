@@ -17,6 +17,7 @@ function LoginPage(): React.ReactElement {
     response?: {
       data?: {
         error?: string
+        message?: string
       }
     }
   }
@@ -38,7 +39,7 @@ function LoginPage(): React.ReactElement {
       navigate('/')
     } catch (err: unknown) {
       const error = err as ErrorResponse
-      setError(error.response?.data?.error || 'Ошибка входа')
+      setError(error.response?.data?.message || error.response?.data?.error || 'Ошибка входа')
     } finally {
       setLoading(false)
     }

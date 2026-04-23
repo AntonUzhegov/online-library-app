@@ -17,8 +17,10 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    private BookDTO convertToDTO(Book book){
+    @Autowired
+    private LoanService loanService;
 
+    private BookDTO convertToDTO(Book book) {
         Set<String> authorsNames = book.getAuthors().stream()
                 .map(author -> author.getFirstName() + " " + author.getLastName())
                 .collect(Collectors.toSet());
@@ -26,6 +28,12 @@ public class BookService {
         Set<String> categoryNames = book.getCategories().stream()
                 .map(Category::getName)
                 .collect(Collectors.toSet());
+
+        // Получаем, кто взял книгу (если недоступна)
+        String borrowedBy = null;
+        if (!book.getAvailable()) {
+            borrowedBy = loanService.getBookBorrowedBy(book.getId());
+        }
 
         return new BookDTO(
                 book.getId(),
@@ -36,14 +44,13 @@ public class BookService {
                 book.getAvailable(),
                 book.getCoverImage(),
                 authorsNames,
-                categoryNames
+                categoryNames,
+                borrowedBy  // ← новое поле
         );
     }
 
     public List<BookDTO> getAllBooks(){
-        return bookRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return bookRepository.findAllByOrderByAvailableDesc().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public BookDTO getBookById(Long id) {

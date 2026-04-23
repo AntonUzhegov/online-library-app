@@ -16,14 +16,17 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 })
 
 api.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token')
+            // Не делаем редирект на странице логина
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login'
+            }
+        }
+        return Promise.reject(error)
     }
-    return Promise.reject(error)
-  }
 )
 
 export default api
