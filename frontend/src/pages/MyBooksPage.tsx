@@ -14,7 +14,6 @@ interface Loan {
   status: string
 }
 
-// Компонент таймера с днями, часами, минутами, секундами
 function CountdownTimer({ dueDate }: { dueDate: string }): React.ReactElement {
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({
     days: 0,
@@ -46,7 +45,6 @@ function CountdownTimer({ dueDate }: { dueDate: string }): React.ReactElement {
     return () => clearInterval(interval)
   }, [dueDate])
 
-  // Форматирование: "14 дней 05:30:00" или "05:30:00" если дней нет
   const formatTime = (): string => {
     const timeStr = `${timeLeft.hours.toString().padStart(2, '0')}:${timeLeft.minutes.toString().padStart(2, '0')}:${timeLeft.seconds.toString().padStart(2, '0')}`
     if (timeLeft.days > 0) {
@@ -57,7 +55,7 @@ function CountdownTimer({ dueDate }: { dueDate: string }): React.ReactElement {
   }
 
   return (
-    <span style={{ fontFamily: 'monospace', fontSize: '16px', fontWeight: '600' }}>
+    <span style={{ fontFamily: 'monospace', fontSize: '16px', fontWeight: '600', color: '#27ae60' }}>
       {formatTime()}
     </span>
   )
@@ -184,20 +182,28 @@ function MyBooksPage(): React.ReactElement {
                 style={{
                   display: 'flex',
                   backgroundColor: 'white',
-                  borderRadius: '20px',
+                  borderRadius: '16px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                   overflow: 'hidden',
-                  transition: 'transform 0.2s',
-                  borderLeft: `5px solid ${isOverdue ? '#c0392b' : '#0f5c3e'}`
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  borderTop: `4px solid ${isOverdue ? '#c0392b' : '#0f5c3e'}`
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)'
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.12)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)'
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'
                 }}
               >
-                {/* Обложка */}
                 <div style={{
-                  width: '120px',
+                  width: '110px',
                   backgroundColor: '#f5f7fa',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  overflow: 'hidden'
                 }}>
                   {loan.coverImage ? (
                     <img
@@ -213,23 +219,21 @@ function MyBooksPage(): React.ReactElement {
                       }}
                     />
                   ) : (
-                    <span style={{ fontSize: '40px' }}>📖</span>
+                    <span style={{ fontSize: '40px', opacity: 0.5 }}>📖</span>
                   )}
                 </div>
 
-                {/* Информация */}
                 <div style={{
                   flex: 1,
-                  padding: '20px',
+                  padding: '16px 20px',
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between'
+                  flexDirection: 'column'
                 }}>
                   <div>
                     <h3 style={{
                       fontSize: '18px',
-                      fontWeight: '600',
-                      margin: '0 0 8px 0',
+                      fontWeight: '700',
+                      margin: '0 0 12px 0',
                       color: '#1a1a1a'
                     }}>
                       {loan.bookTitle}
@@ -238,36 +242,35 @@ function MyBooksPage(): React.ReactElement {
                     <div style={{
                       display: 'flex',
                       flexWrap: 'wrap',
-                      gap: '20px',
-                      marginBottom: '10px'
+                      gap: '24px',
+                      marginBottom: '12px'
                     }}>
                       <div>
-                        <span style={{ fontSize: '12px', color: '#888' }}>Взята:</span>
-                        <span style={{ fontSize: '14px', color: '#333', marginLeft: '5px' }}>
+                        <div style={{ fontSize: '12px', color: '#888', marginBottom: '2px' }}>Взята</div>
+                        <div style={{ fontSize: '14px', color: '#333', fontWeight: '500' }}>
                           {new Date(loan.loanDate).toLocaleDateString('ru-RU')}
-                        </span>
+                        </div>
                       </div>
                       <div>
-                        <span style={{ fontSize: '12px', color: '#888' }}>До:</span>
-                        <span style={{ fontSize: '14px', color: '#333', marginLeft: '5px' }}>
+                        <div style={{ fontSize: '12px', color: '#888', marginBottom: '2px' }}>До</div>
+                        <div style={{ fontSize: '14px', color: '#333', fontWeight: '500' }}>
                           {new Date(loan.dueDate).toLocaleDateString('ru-RU')}
-                        </span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Таймер обратного отсчёта */}
                     {isActive && !isOverdue && (
                       <div style={{
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        marginTop: '10px',
-                        padding: '8px 12px',
+                        marginTop: '8px',
+                        padding: '6px 12px',
                         backgroundColor: '#e8f5e9',
                         borderRadius: '12px',
                         width: 'fit-content'
                       }}>
-                        <span style={{ fontSize: '14px', color: '#27ae60' }}>Осталось:</span>
+                        <span style={{ fontSize: '16px' }}></span>
                         <CountdownTimer dueDate={loan.dueDate} />
                       </div>
                     )}
@@ -275,9 +278,9 @@ function MyBooksPage(): React.ReactElement {
                     {isActive && isOverdue && (
                       <div style={{
                         display: 'inline-block',
-                        padding: '4px 12px',
+                        padding: '6px 14px',
                         borderRadius: '20px',
-                        fontSize: '12px',
+                        fontSize: '13px',
                         fontWeight: '600',
                         backgroundColor: '#fee2e2',
                         color: '#c0392b'
@@ -289,52 +292,55 @@ function MyBooksPage(): React.ReactElement {
                     {loan.status === 'RETURNED' && (
                       <div style={{
                         display: 'inline-block',
-                        padding: '4px 12px',
+                        padding: '6px 14px',
                         borderRadius: '20px',
-                        fontSize: '12px',
+                        fontSize: '13px',
                         fontWeight: '600',
-                        backgroundColor: '#e5e7eb',
-                        color: '#666'
+                        backgroundColor: '#e8f5e9',
+                        color: '#27ae60'
                       }}>
-                        Возвращена
+                        ✓ Возвращена
                       </div>
                     )}
                   </div>
 
-                  {/* Кнопка возврата */}
                   {loan.status !== 'RETURNED' && (
-                    <button
-                      onClick={() => handleReturn(loan.loanId)}
-                      disabled={returnLoading === loan.loanId}
-                      style={{
-                        alignSelf: 'flex-start',
-                        marginTop: '15px',
-                        padding: '8px 24px',
-                        backgroundColor: 'transparent',
-                        color: '#c0392b',
-                        border: '2px solid #c0392b',
-                        borderRadius: '30px',
-                        cursor: returnLoading === loan.loanId ? 'not-allowed' : 'pointer',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        transition: 'all 0.2s',
-                        opacity: returnLoading === loan.loanId ? 0.6 : 1
-                      }}
-                      onMouseEnter={(e) => {
-                        if (returnLoading !== loan.loanId) {
-                          e.currentTarget.style.backgroundColor = '#c0392b'
-                          e.currentTarget.style.color = 'white'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (returnLoading !== loan.loanId) {
-                          e.currentTarget.style.backgroundColor = 'transparent'
-                          e.currentTarget.style.color = '#c0392b'
-                        }
-                      }}
-                    >
-                      {returnLoading === loan.loanId ? 'Возврат...' : 'Вернуть книгу'}
-                    </button>
+                    <div style={{
+                      marginTop: '16px',
+                      display: 'flex',
+                      justifyContent: 'flex-end'
+                    }}>
+                      <button
+                        onClick={() => handleReturn(loan.loanId)}
+                        disabled={returnLoading === loan.loanId}
+                        style={{
+                          padding: '8px 24px',
+                          backgroundColor: 'transparent',
+                          color: '#c0392b',
+                          border: '2px solid #c0392b',
+                          borderRadius: '30px',
+                          cursor: returnLoading === loan.loanId ? 'not-allowed' : 'pointer',
+                          fontSize: '14px',
+                          fontWeight: '600',
+                          transition: 'all 0.2s',
+                          opacity: returnLoading === loan.loanId ? 0.6 : 1
+                        }}
+                        onMouseEnter={(e) => {
+                          if (returnLoading !== loan.loanId) {
+                            e.currentTarget.style.backgroundColor = '#c0392b'
+                            e.currentTarget.style.color = 'white'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (returnLoading !== loan.loanId) {
+                            e.currentTarget.style.backgroundColor = 'transparent'
+                            e.currentTarget.style.color = '#c0392b'
+                          }
+                        }}
+                      >
+                        {returnLoading === loan.loanId ? 'Возврат...' : 'Вернуть книгу'}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>

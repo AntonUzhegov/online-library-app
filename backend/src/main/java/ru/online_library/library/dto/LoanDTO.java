@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -14,9 +14,9 @@ public class LoanDTO {
     private Long bookId;
     private String bookTitle;
     private String coverImage;
-    private LocalDate loanDate;
-    private LocalDate dueDate;
-    private LocalDate returnDate;
+    private LocalDateTime loanDate;
+    private LocalDateTime dueDate;
+    private LocalDateTime returnDate;
     private String status;
     private String borrowedBy;
 }

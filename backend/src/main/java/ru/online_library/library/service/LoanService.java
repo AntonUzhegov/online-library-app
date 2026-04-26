@@ -13,7 +13,7 @@ import ru.online_library.library.repository.LoanRepository;
 import ru.online_library.library.repository.UserRepository;
 import java.util.stream.Collectors;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -51,7 +51,7 @@ public class LoanService {
         }
 
         //Найти книгу
-        ru.online_library.library.model.Book book = bookRepository.findById(bookId).orElseThrow(()-> new RuntimeException("Книга не найдена"));
+        Book book = bookRepository.findById(bookId).orElseThrow(()-> new RuntimeException("Книга не найдена"));
 
         if (!book.getAvailable()) {
             throw new RuntimeException("Книга уже занята");
@@ -61,8 +61,8 @@ public class LoanService {
         Loan loan = new Loan();
         loan.setBook(book);
         loan.setUser(user);
-        loan.setLoanDate(LocalDate.now());
-        loan.setDueDate(LocalDate.now().plusDays(LOAN_DAYS));
+        loan.setLoanDate(LocalDateTime.now());           // ← изменено
+        loan.setDueDate(LocalDateTime.now().plusDays(LOAN_DAYS));  // ← изменено
         loan.setStatus(LoanStatus.ACTIVE);
 
         // Пометить книгу как недоступную
@@ -93,7 +93,7 @@ public class LoanService {
         }
 
         // Обновить статус выдачи
-        loan.setReturnDate(LocalDate.now());
+        loan.setReturnDate(LocalDateTime.now());        // ← изменено
         loan.setStatus(LoanStatus.RETURNED);
 
         // Сделать книгу снова доступной
@@ -127,7 +127,7 @@ public class LoanService {
     private void checkOverdue(User user) {
         List<Loan> activeLoans = loanRepository.findByUserAndStatusIn(user, List.of(LoanStatus.ACTIVE));
         for (Loan loan : activeLoans) {
-            if (loan.getDueDate().isBefore(LocalDate.now())) {
+            if (loan.getDueDate().isBefore(LocalDateTime.now())) {  // ← изменено
                 loan.setStatus(LoanStatus.OVERDUE);
                 loanRepository.save(loan);
             }
@@ -170,4 +170,3 @@ public class LoanService {
         return dto;
     }
 }
-

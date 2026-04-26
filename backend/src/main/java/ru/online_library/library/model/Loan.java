@@ -1,7 +1,7 @@
 package ru.online_library.library.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "loans")
@@ -21,13 +21,13 @@ public class Loan {
     private User user;
 
     @Column(name = "loan_date", nullable = false)
-    private LocalDate loanDate;
+    private LocalDateTime loanDate;
 
     @Column(name = "due_date", nullable = false)
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     @Column(name = "return_date")
-    private LocalDate returnDate;
+    private LocalDateTime returnDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -35,7 +35,7 @@ public class Loan {
 
     public Loan(){}
 
-    public Loan(Book book, User user, LocalDate loanDate, LocalDate dueDate){
+    public Loan(Book book, User user, LocalDateTime loanDate, LocalDateTime dueDate){
         this.book = book;
         this.user = user;
         this.loanDate = loanDate;
@@ -63,24 +63,24 @@ public class Loan {
         this.user = user;
     }
 
-    public LocalDate getLoanDate() {
+    public LocalDateTime getLoanDate() {
         return loanDate;
     }
-    public void setLoanDate(LocalDate loanDate) {
+    public void setLoanDate(LocalDateTime loanDate) {
         this.loanDate = loanDate;
     }
 
-    public LocalDate getDueDate() {
+    public LocalDateTime getDueDate() {
         return dueDate;
     }
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
 
-    public LocalDate getReturnDate() {
+    public LocalDateTime getReturnDate() {
         return returnDate;
     }
-    public void setReturnDate(LocalDate returnDate) {
+    public void setReturnDate(LocalDateTime returnDate) {
         this.returnDate = returnDate;
     }
 

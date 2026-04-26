@@ -1,8 +1,7 @@
 SET NAMES utf8mb4;
 SET CHARACTER SET utf8mb4;
 
-DROP TABLE IF EXISTS users;
-
+DROP DATABASE IF EXISTS library;
 CREATE DATABASE IF NOT EXISTS library;
 USE library;
 
@@ -63,9 +62,9 @@ CREATE TABLE loans (
     loan_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     book_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
-    loan_date DATE NOT NULL,
-    due_date DATE NOT NULL,
-    return_date DATE,
+    loan_date DATETIME NOT NULL,
+    due_date DATETIME NOT NULL,
+    return_date DATETIME NULL,
     status ENUM('ACTIVE', 'RETURNED', 'OVERDUE') DEFAULT 'ACTIVE',
     FOREIGN KEY (book_id) REFERENCES books(book_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
@@ -224,10 +223,9 @@ INSERT INTO users (username, email, password_hash, role) VALUES
 
 
 INSERT INTO loans (book_id, user_id, loan_date, due_date, return_date, status) VALUES
-(1, 1, '2026-04-01', '2026-04-15', '2026-04-14', 'RETURNED'),
-(4, 2, '2026-04-05', '2026-04-19', NULL, 'ACTIVE'),
-(6, 2, '2026-04-10', '2026-04-24', NULL, 'ACTIVE'),
-(8, 4, '2026-03-20', '2026-04-03', NULL, 'OVERDUE'),
-(2, 1, '2026-04-12', '2026-04-26', NULL, 'ACTIVE'),
-(3, 3, '2026-04-08', '2026-04-22', '2026-04-20', 'RETURNED');
-
+(1, 1, '2026-04-01 10:30:00', '2026-04-15 23:59:59', '2026-04-14 15:20:00', 'RETURNED'),
+(4, 2, '2026-04-05 14:15:00', '2026-04-19 23:59:59', NULL, 'ACTIVE'),
+(6, 2, '2026-04-10 09:45:00', '2026-04-24 23:59:59', NULL, 'ACTIVE'),
+(8, 4, '2026-03-20 11:00:00', '2026-04-03 23:59:59', NULL, 'OVERDUE'),
+(2, 1, '2026-04-12 16:30:00', '2026-04-26 23:59:59', NULL, 'ACTIVE'),
+(3, 3, '2026-04-08 13:20:00', '2026-04-22 23:59:59', '2026-04-20 18:45:00', 'RETURNED');
