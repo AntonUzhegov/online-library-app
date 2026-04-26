@@ -31,18 +31,13 @@ function Header(): React.ReactElement {
         backgroundClip: 'text',
         WebkitBackgroundClip: 'text',
         WebkitTextFillColor: 'transparent',
-        cursor: 'default'
+        cursor: 'default',
+        whiteSpace: 'nowrap'
       }}>
         📚 Online Library
       </div>
 
-      <div style={{ 
-        position: 'absolute',
-        left: '85.1%',
-        transform: 'translateX(-50%)',
-        display: 'flex',
-        gap: '12px'
-      }}>
+      <nav style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <Link 
           to="/" 
           style={{ 
@@ -134,55 +129,100 @@ function Header(): React.ReactElement {
         >
           Каталог
         </Link>
-      </div>
 
-      <nav style={{ display: 'flex', gap: '20px', alignItems: 'center', marginLeft: 'auto', marginRight: '-25px'}}>
         {user ? (
-          <Link 
-            to="/profile" 
-            style={{ 
-              color: isActive('/profile') ? '#ffd966' : 'white', 
-              textDecoration: 'none', 
-              fontSize: '16px',
-              fontWeight: '500',
-              padding: '10px 24px',
-              borderRadius: '12px',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              background: isActive('/profile') 
-                ? 'rgba(255, 217, 102, 0.15)' 
-                : 'rgba(255, 255, 255, 0.03)',
-              border: isActive('/profile')
-                ? '1px solid rgba(255, 217, 102, 0.5)'
-                : '1px solid rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(5px)',
-              letterSpacing: '0.3px',
-              boxShadow: isActive('/profile')
-                ? '0 8px 20px rgba(255, 217, 102, 0.2)'
-                : 'none'
-            }}
-            onMouseEnter={(e) => {
-              if (!isActive('/profile')) {
-                e.currentTarget.style.background = 'rgba(255, 217, 102, 0.15)'
-                e.currentTarget.style.border = '1px solid rgba(255, 217, 102, 0.5)'
-                e.currentTarget.style.color = '#ffd966'
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 217, 102, 0.2)'
-              } else {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isActive('/profile')) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
-                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)'
-                e.currentTarget.style.color = 'white'
-                e.currentTarget.style.boxShadow = 'none'
-              }
-              e.currentTarget.style.transform = 'translateY(0)'
-            }}
-          >
-            Профиль
-          </Link>
+          <>
+            <Link 
+              to="/my-books" 
+              style={{ 
+                color: isActive('/my-books') ? '#ffd966' : 'white', 
+                textDecoration: 'none', 
+                fontSize: '16px',
+                fontWeight: '500',
+                padding: '10px 24px',
+                borderRadius: '12px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                background: isActive('/my-books') 
+                  ? 'rgba(255, 217, 102, 0.15)' 
+                  : 'rgba(255, 255, 255, 0.03)',
+                border: isActive('/my-books')
+                  ? '1px solid rgba(255, 217, 102, 0.5)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(5px)',
+                letterSpacing: '0.3px',
+                boxShadow: isActive('/my-books')
+                  ? '0 8px 20px rgba(255, 217, 102, 0.2)'
+                  : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive('/my-books')) {
+                  e.currentTarget.style.background = 'rgba(255, 217, 102, 0.15)'
+                  e.currentTarget.style.border = '1px solid rgba(255, 217, 102, 0.5)'
+                  e.currentTarget.style.color = '#ffd966'
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 217, 102, 0.2)'
+                } else {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive('/my-books')) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+                  e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)'
+                  e.currentTarget.style.color = 'white'
+                  e.currentTarget.style.boxShadow = 'none'
+                }
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              Мои книги
+            </Link>
+            <Link 
+              to="/profile" 
+              style={{ 
+                color: isActive('/profile') ? '#ffd966' : 'white', 
+                textDecoration: 'none', 
+                fontSize: '16px',
+                fontWeight: '500',
+                padding: '10px 24px',
+                borderRadius: '12px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                background: isActive('/profile') 
+                  ? 'rgba(255, 217, 102, 0.15)' 
+                  : 'rgba(255, 255, 255, 0.03)',
+                border: isActive('/profile')
+                  ? '1px solid rgba(255, 217, 102, 0.5)'
+                  : '1px solid rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(5px)',
+                letterSpacing: '0.3px',
+                boxShadow: isActive('/profile')
+                  ? '0 8px 20px rgba(255, 217, 102, 0.2)'
+                  : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive('/profile')) {
+                  e.currentTarget.style.background = 'rgba(255, 217, 102, 0.15)'
+                  e.currentTarget.style.border = '1px solid rgba(255, 217, 102, 0.5)'
+                  e.currentTarget.style.color = '#ffd966'
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 217, 102, 0.2)'
+                } else {
+                  e.currentTarget.style.transform = 'translateY(-2px)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive('/profile')) {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)'
+                  e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)'
+                  e.currentTarget.style.color = 'white'
+                  e.currentTarget.style.boxShadow = 'none'
+                }
+                e.currentTarget.style.transform = 'translateY(0)'
+              }}
+            >
+              Профиль
+            </Link>
+          </>
         ) : (
           <Link 
             to="/login" 

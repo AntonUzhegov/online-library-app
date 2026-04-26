@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import api from '../service/api'
 import { Book, Category } from '../types'
+import Toast from '../components/common/Toast'
 
 interface ErrorResponse {
   response?: {
@@ -20,6 +21,7 @@ function CatalogPage(): React.ReactElement {
   const [yearFrom, setYearFrom] = useState<string>('')
   const [yearTo, setYearTo] = useState<string>('')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false)
   const [categories, setCategories] = useState<Category[]>([])
@@ -87,7 +89,17 @@ function CatalogPage(): React.ReactElement {
 
   const handleBookClick = (book: Book): void => setSelectedBook(book)
   const closeModal = (): void => setSelectedBook(null)
-  const handleReserve = (): void => alert('Функция бронирования будет добавлена позже')
+
+  const handleReserve = async (bookId: number): Promise<void> => {
+    try {
+      await api.post(`/loans/borrow/${bookId}`)
+      setToast({ message: 'Книга успешно забронирована!', type: 'success' })
+      fetchBooks()
+      closeModal()
+    } catch (err: any) {
+      setToast({ message: err.response?.data || 'Ошибка при бронировании', type: 'error' })
+    }
+  }
 
   if (initialLoading) {
     return (
@@ -382,7 +394,7 @@ function CatalogPage(): React.ReactElement {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',  // ← ИЗМЕНЕНО: теперь 5 книг в строке
+          gridTemplateColumns: 'repeat(5, 1fr)',
           gap: '28px'
         }}>
           {books.map(book => (
@@ -634,7 +646,7 @@ function CatalogPage(): React.ReactElement {
                 </div>
                 
                 <button
-                  onClick={handleReserve}
+                  onClick={() => handleReserve(selectedBook.id)}
                   disabled={!selectedBook.available}
                   style={{
                     width: '100%',
@@ -668,6 +680,14 @@ function CatalogPage(): React.ReactElement {
             </div>
           </div>
         </div>
+      )}
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   )
