@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
 import api from '../service/api'
 import { Book, Category } from '../types'
 import Toast from '../components/common/Toast'
+import { AuthContext } from '../context/AuthContext'
 
 interface ErrorResponse {
   response?: {
@@ -12,6 +13,7 @@ interface ErrorResponse {
 }
 
 function CatalogPage(): React.ReactElement {
+  const { user } = useContext(AuthContext)
   const [books, setBooks] = useState<Book[]>([])
   const [initialLoading, setInitialLoading] = useState<boolean>(true)
   const [error, setError] = useState<string>('')
@@ -91,6 +93,11 @@ function CatalogPage(): React.ReactElement {
   const closeModal = (): void => setSelectedBook(null)
 
   const handleReserve = async (bookId: number): Promise<void> => {
+    if (!user) {
+      setToast({ message: 'Войдите в аккаунт, чтобы забронировать книгу', type: 'error' })
+      return
+    }
+
     try {
       await api.post(`/loans/borrow/${bookId}`)
       setToast({ message: 'Книга успешно забронирована!', type: 'success' })
@@ -280,7 +287,7 @@ function CatalogPage(): React.ReactElement {
             )}
           </div>
 
-          <div style={{ flex: '0.5', minWidth: '100px' }}>
+          <div style={{ flex: '0.3', minWidth: '90px' }}>
             <input
               type="number"
               placeholder="Год от"
@@ -288,22 +295,22 @@ function CatalogPage(): React.ReactElement {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYearFrom(e.target.value)}
               style={{
                 width: '100%',
-                padding: '14px 12px',
+                padding: '12px 10px',
                 border: '2px solid #e5e7eb',
-                borderRadius: '16px',
-                fontSize: '18px',
+                borderRadius: '14px',
+                fontSize: '15px',
                 outline: 'none',
                 transition: 'all 0.2s',
                 backgroundColor: 'white',
                 boxSizing: 'border-box',
-                height: '56px'
+                height: '48px'
               }}
               onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#0f5c3e'}
               onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
 
-          <div style={{ flex: '0.5', minWidth: '100px' }}>
+          <div style={{ flex: '0.3', minWidth: '90px' }}>
             <input
               type="number"
               placeholder="Год до"
@@ -311,15 +318,15 @@ function CatalogPage(): React.ReactElement {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setYearTo(e.target.value)}
               style={{
                 width: '100%',
-                padding: '14px 12px',
+                padding: '12px 10px',
                 border: '2px solid #e5e7eb',
-                borderRadius: '16px',
-                fontSize: '18px',
+                borderRadius: '14px',
+                fontSize: '15px',
                 outline: 'none',
                 transition: 'all 0.2s',
                 backgroundColor: 'white',
                 boxSizing: 'border-box',
-                height: '56px'
+                height: '48px'
               }}
               onFocus={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#0f5c3e'}
               onBlur={(e: React.FocusEvent<HTMLInputElement>) => e.target.style.borderColor = '#e5e7eb'}
@@ -407,7 +414,11 @@ function CatalogPage(): React.ReactElement {
                 overflow: 'hidden',
                 boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
                 transition: 'all 0.3s cubic-bezier(0.2, 0, 0, 1)',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%'
               }}
               onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                 e.currentTarget.style.transform = 'translateY(-8px)'
@@ -444,24 +455,9 @@ function CatalogPage(): React.ReactElement {
                 ) : (
                   <span style={{ fontSize: '56px', opacity: 0.5 }}>📖</span>
                 )}
-                {!book.available && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    backgroundColor: '#c0392b',
-                    color: 'white',
-                    padding: '4px 10px',
-                    borderRadius: '20px',
-                    fontSize: '11px',
-                    fontWeight: '600'
-                  }}>
-                    Забронировано
-                  </div>
-                )}
               </div>
               
-              <div style={{ padding: '18px' }}>
+              <div style={{ padding: '18px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <h3 style={{
                   fontSize: '16px',
                   fontWeight: '600',
@@ -490,10 +486,28 @@ function CatalogPage(): React.ReactElement {
                 <p style={{
                   fontSize: '12px',
                   color: '#999',
-                  margin: '0'
+                  margin: '0 0 12px 0'
                 }}>
                   {book.publicationYear || 'Год не указан'}
                 </p>
+
+                {/* Если книга недоступна — показываем кто взял внизу справа */}
+                {!book.available && book.borrowedBy && (
+                  <div style={{
+                    marginTop: 'auto',
+                    textAlign: 'right',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    color: '#c0392b',
+                    backgroundColor: '#fee2e2',
+                    padding: '6px 10px',
+                    borderRadius: '12px',
+                    display: 'inline-block',
+                    alignSelf: 'flex-end'
+                  }}>
+                    Взял: {book.borrowedBy}
+                  </div>
+                )}
               </div>
             </div>
           ))}

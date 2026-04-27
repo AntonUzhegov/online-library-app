@@ -8,6 +8,7 @@ export interface Book {
   coverImage: string
   authors: string[]
   categories: string[]
+  borrowedBy?: string  // кто взял книгу
 }
 
 export interface Category {
