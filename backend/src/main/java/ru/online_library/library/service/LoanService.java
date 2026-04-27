@@ -14,6 +14,7 @@ import ru.online_library.library.repository.UserRepository;
 import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -33,6 +34,9 @@ public class LoanService {
 
     private static final int MAX_BOOKS = 5;
     private static final int LOAN_DAYS = 14;
+
+    // Часовой пояс Москвы (UTC+3)
+    private static final ZoneId MOSCOW_ZONE = ZoneId.of("Europe/Moscow");
 
     //взять книгу
     @Transactional
@@ -57,12 +61,12 @@ public class LoanService {
             throw new RuntimeException("Книга уже занята");
         }
 
-        // Создать выдачу
+        // Создать выдачу с московским временем
         Loan loan = new Loan();
         loan.setBook(book);
         loan.setUser(user);
-        loan.setLoanDate(LocalDateTime.now());           // ← изменено
-        loan.setDueDate(LocalDateTime.now().plusDays(LOAN_DAYS));  // ← изменено
+        loan.setLoanDate(LocalDateTime.now(MOSCOW_ZONE));
+        loan.setDueDate(LocalDateTime.now(MOSCOW_ZONE).plusDays(LOAN_DAYS));
         loan.setStatus(LoanStatus.ACTIVE);
 
         // Пометить книгу как недоступную
@@ -92,8 +96,8 @@ public class LoanService {
             throw new RuntimeException("Книга уже возвращена");
         }
 
-        // Обновить статус выдачи
-        loan.setReturnDate(LocalDateTime.now());        // ← изменено
+        // Обновить статус выдачи с московским временем
+        loan.setReturnDate(LocalDateTime.now(MOSCOW_ZONE));
         loan.setStatus(LoanStatus.RETURNED);
 
         // Сделать книгу снова доступной
@@ -126,8 +130,9 @@ public class LoanService {
      */
     private void checkOverdue(User user) {
         List<Loan> activeLoans = loanRepository.findByUserAndStatusIn(user, List.of(LoanStatus.ACTIVE));
+        LocalDateTime now = LocalDateTime.now(MOSCOW_ZONE);
         for (Loan loan : activeLoans) {
-            if (loan.getDueDate().isBefore(LocalDateTime.now())) {  // ← изменено
+            if (loan.getDueDate().isBefore(now)) {
                 loan.setStatus(LoanStatus.OVERDUE);
                 loanRepository.save(loan);
             }

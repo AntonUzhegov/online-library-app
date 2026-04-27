@@ -118,9 +118,9 @@ INSERT INTO books (title, isbn, publication_year, publisher, available, cover_im
 ('1984', '9780451524935', 1949, 'Secker & Warburg', TRUE, '/covers/1984.jpg'),
 ('Хоббит', '9780547928227', 1937, 'George Allen & Unwin', TRUE, '/covers/hobbit.jpg'),
 ('Основание', '9780553293357', 1951, 'Gnome Press', TRUE, '/covers/foundation.jpg'),
-('Убийство в Восточном экспрессе', '9780062693662', 1934, 'Collins Crime Club', FALSE, '/covers/orient_express.jpg'),
+('Убийство в Восточном экспрессе', '9780062693662', 1934, 'Collins Crime Club', TRUE, '/covers/orient_express.jpg'),
 ('Стив Джобс', '9781451648539', 2011, 'Simon & Schuster', TRUE, '/covers/steve_jobs.jpg'),
-('Чистый код', '9780132350884', 2008, 'Prentice Hall', FALSE, '/covers/clean_code.jpg'),
+('Чистый код', '9780132350884', 2008, 'Prentice Hall', TRUE, '/covers/clean_code.jpg'),
 ('Гордость и предубеждение', '9780141439518', 1813, 'T. Egerton', TRUE, '/covers/pride.jpg'),
 ('Преступление и наказание', '9780679734505', 1866, 'The Russian Messenger', TRUE, '/covers/crime_punishment.jpg'),
 ('Марсианин', '9780553418026', 2011, 'Crown', TRUE, '/covers/martian.jpg'),
@@ -214,18 +214,3 @@ INSERT INTO book_authors (book_id, author_id) VALUES
 (36,28), -- О дивный новый мир → Хаксли
 (37,29), -- 451 градус по Фаренгейту → Брэдбери
 (38,30); -- Лев, колдунья и платяной шкаф → Льюис
-
-INSERT INTO users (username, email, password_hash, role) VALUES
-('user1', 'user1@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
-('user2', 'user2@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
-('user3', 'user3@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER'),
-('user5', 'user5@test.com', '$2a$10$pwMcLv0Vk4mR8CPYsi1W3OtVREoB42nSpuXWJu4nj20UyGRu4ZnHe', 'ROLE_USER');
-
-
-INSERT INTO loans (book_id, user_id, loan_date, due_date, return_date, status) VALUES
-(1, 1, '2026-04-01 10:30:00', '2026-04-15 23:59:59', '2026-04-14 15:20:00', 'RETURNED'),
-(4, 2, '2026-04-05 14:15:00', '2026-04-19 23:59:59', NULL, 'ACTIVE'),
-(6, 2, '2026-04-10 09:45:00', '2026-04-24 23:59:59', NULL, 'ACTIVE'),
-(8, 4, '2026-03-20 11:00:00', '2026-04-03 23:59:59', NULL, 'OVERDUE'),
-(2, 1, '2026-04-12 16:30:00', '2026-04-26 23:59:59', NULL, 'ACTIVE'),
-(3, 3, '2026-04-08 13:20:00', '2026-04-22 23:59:59', '2026-04-20 18:45:00', 'RETURNED');
