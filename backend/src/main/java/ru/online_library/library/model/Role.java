@@ -2,7 +2,8 @@ package ru.online_library.library.model;
 
 public enum Role {
     ROLE_USER("Обычный пользователь"),
-    ROLE_ADMIN("Администратор");
+    ROLE_ADMIN("Администратор"),
+    ROLE_LIBRARIAN("Библиотекарь");
 
     private final String value;
 

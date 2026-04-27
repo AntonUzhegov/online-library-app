@@ -59,12 +59,7 @@ public class BookService {
         return convertToDTO(book);
     }
 
-    public BookDTO addBook(BookDTO bookDTO) {
-        Book book = new Book();
-        // заполнить поля из DTO
-        // сохранить
-        return convertToDTO(bookRepository.save(book));
-    }
+
 
 
     // Фильтрация по категории
@@ -106,5 +101,39 @@ public class BookService {
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public BookDTO addBook(BookDTO bookDTO){
+        Book book = new Book();
+        book.setTitle(bookDTO.getTitle());
+        book.setIsbn(bookDTO.getIsbn());
+        book.setPublicationYear(bookDTO.getPublicationYear());
+        book.setPublisher(bookDTO.getPublisher());
+        book.setAvailable(true);
+        book.setCoverImage(bookDTO.getCoverImage());
+
+        return convertToDTO(bookRepository.save(book));
+    }
+
+    // Обновить книгу
+    public BookDTO updateBook(Long id, BookDTO bookDTO) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Книга не найдена"));
+
+        book.setTitle(bookDTO.getTitle());
+        book.setIsbn(bookDTO.getIsbn());
+        book.setPublicationYear(bookDTO.getPublicationYear());
+        book.setPublisher(bookDTO.getPublisher());
+        book.setCoverImage(bookDTO.getCoverImage());
+
+        return convertToDTO(bookRepository.save(book));
+    }
+
+    // Удалить книгу
+    public void deleteBook(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new RuntimeException("Книга не найдена");
+        }
+        bookRepository.deleteById(id);
     }
 }

@@ -1,12 +1,15 @@
 package ru.online_library.library.service;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.online_library.library.exception.BadRequestException;
 import ru.online_library.library.exception.UnauthorizedException;
 import ru.online_library.library.model.Role;
 import ru.online_library.library.model.User;
@@ -60,6 +63,12 @@ public class AuthService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return jwtUtils.generateJwtToken(authentication);
+        } catch (InternalAuthenticationServiceException e) {
+            // Spring Security оборачивает DisabledException в InternalAuthenticationServiceException
+            if (e.getCause() instanceof DisabledException) {
+                throw new DisabledException("Ваш аккаунт заблокирован. Обратитесь к администратору.");
+            }
+            throw new UnauthorizedException("Неверный логин или пароль");
         } catch (AuthenticationException e) {
             throw new UnauthorizedException("Неверный логин или пароль");
         }
