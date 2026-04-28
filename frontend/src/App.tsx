@@ -8,13 +8,21 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import MyBooksPage from './pages/MyBooksPage'
+import AdminPage from './pages/admin/AdminPage'
+import AdminBooksPage from './pages/admin/AdminBooksPage'
+import AdminUsersPage from './pages/admin/AdminUsersPage'
+import AdminStatsPage from './pages/admin/AdminStatsPage'
 
 function AppContent(): React.ReactElement {
   const location = useLocation()
   
   const hideHeader: boolean = location.pathname === '/login' || 
                      location.pathname === '/register' ||
-                     location.pathname === '/profile'
+                     location.pathname === '/profile' ||
+                     location.pathname === '/admin' ||
+                     location.pathname === '/admin/books' ||
+                     location.pathname === '/admin/users' ||
+                     location.pathname === '/admin/stats'
 
   return (
     <>
@@ -27,6 +35,10 @@ function AppContent(): React.ReactElement {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/my-books" element={<MyBooksPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/books" element={<AdminBooksPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/stats" element={<AdminStatsPage />} />
         </Routes>
       </main>
     </>

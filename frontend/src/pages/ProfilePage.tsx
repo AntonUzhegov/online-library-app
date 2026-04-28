@@ -33,7 +33,6 @@ function ProfilePage(): React.ReactNode {
   const [passwordSuccess, setPasswordSuccess] = useState<string>('')
   const [passwordLoading, setPasswordLoading] = useState<boolean>(false)
 
-  // Если пользователь не авторизован — редирект на логин
   if (!user) {
     navigate('/login')
     return null
@@ -269,59 +268,90 @@ function ProfilePage(): React.ReactNode {
                 </div>
               ))}
             </div>
+              <button 
+                onClick={() => setShowPasswordModal(true)}
+                style={{
+                  width: '100%',
+                  marginBottom: '12px',
+                  padding: '14px',
+                  backgroundColor: 'transparent',
+                  color: '#0f5c3e',
+                  border: '2px solid #0f5c3e',
+                  borderRadius: '40px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = '#0f5c3e'
+                  e.currentTarget.style.color = 'white'
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.color = '#0f5c3e'
+                }}
+              >
+                Сменить пароль
+              </button>
 
-            <button 
-              onClick={() => setShowPasswordModal(true)}
-              style={{
-                width: '100%',
-                marginBottom: '12px',
-                padding: '14px',
-                backgroundColor: 'transparent',
-                color: '#0f5c3e',
-                border: '2px solid #0f5c3e',
-                borderRadius: '40px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.backgroundColor = '#0f5c3e'
-                e.currentTarget.style.color = 'white'
-              }}
-              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-                e.currentTarget.style.color = '#0f5c3e'
-              }}
-            >
-              Сменить пароль
-            </button>
+              <button 
+                onClick={handleLogout}
+                style={{
+                  width: '100%',
+                  marginBottom: '12px',
+                  padding: '14px',
+                  backgroundColor: 'transparent',
+                  color: '#c0392b',
+                  border: '2px solid #c0392b',
+                  borderRadius: '40px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s'
+                }}
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = '#c0392b'
+                  e.currentTarget.style.color = 'white'
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                  e.currentTarget.style.color = '#c0392b'
+                }}
+              >
+                Выйти из аккаунта
+              </button>
 
-            <button 
-              onClick={handleLogout}
-              style={{
-                width: '100%',
-                padding: '14px',
-                backgroundColor: 'transparent',
-                color: '#c0392b',
-                border: '2px solid #c0392b',
-                borderRadius: '40px',
-                fontSize: '16px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}
-              onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.backgroundColor = '#c0392b'
-                e.currentTarget.style.color = 'white'
-              }}
-              onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-                e.currentTarget.style.color = '#c0392b'
-              }}
-            >
-              Выйти из аккаунта
-            </button>
+              {user?.role === 'ROLE_ADMIN' && (
+                <Link 
+                  to="/admin" 
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    backgroundColor: 'transparent',
+                    color: '#3498db',
+                    border: '2px solid #3498db',
+                    borderRadius: '40px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                    display: 'block',
+                    textDecoration: 'none'
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.currentTarget.style.backgroundColor = '#3498db'
+                    e.currentTarget.style.color = 'white'
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.currentTarget.style.backgroundColor = 'transparent'
+                    e.currentTarget.style.color = '#3498db'
+                  }}
+                >
+                  Админ панель
+                </Link>
+              )}
           </div>
         </div>
       </div>
