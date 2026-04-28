@@ -62,4 +62,9 @@ public class BookController {
     public ResponseEntity<List<BookDTO>> filterByAvailable(@RequestParam Boolean available) {
         return ResponseEntity.ok(bookService.getBooksByAvailable(available));
     }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<BookDTO>> getPopularBooks() {
+        return ResponseEntity.ok(bookService.getAllBooksByPopularity());
+    }
 }

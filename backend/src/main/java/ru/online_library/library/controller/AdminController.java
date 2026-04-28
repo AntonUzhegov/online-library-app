@@ -3,8 +3,10 @@ package ru.online_library.library.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.online_library.library.dto.BookDTO;
+import ru.online_library.library.dto.LoanDTO;
 import ru.online_library.library.dto.UserDTO;
 import ru.online_library.library.service.BookService;
+import ru.online_library.library.service.LoanService;
 import ru.online_library.library.service.UserService;
 
 import java.util.List;
@@ -16,10 +18,12 @@ import java.util.Map;
 public class AdminController {
     private final BookService bookService;
     private final UserService userService;
+    private final LoanService loanService;
 
-    public AdminController(BookService bookService, UserService userService) {
+    public AdminController(BookService bookService, UserService userService, LoanService loanService) {
         this.bookService = bookService;
         this.userService = userService;
+        this.loanService = loanService;
     }
 
     // Добавить книгу
@@ -81,5 +85,35 @@ public class AdminController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // Статистика всех выдач
+    @GetMapping("/statistics/loans")
+    public ResponseEntity<List<LoanDTO>> getAllLoans() {
+        return ResponseEntity.ok(loanService.getAllLoans());
+    }
+
+    // Просроченные книги
+    @GetMapping("/statistics/overdue")
+    public ResponseEntity<List<LoanDTO>> getOverdueLoans() {
+        return ResponseEntity.ok(loanService.getOverdueLoans());
+    }
+
+    // Активные выдачи
+    @GetMapping("/statistics/active")
+    public ResponseEntity<List<LoanDTO>> getActiveLoans() {
+        return ResponseEntity.ok(loanService.getActiveLoans());
+    }
+
+    // Популярные книги
+    @GetMapping("/statistics/popular")
+    public ResponseEntity<?> getPopularBooks() {
+        return ResponseEntity.ok(loanService.getPopularBooks());
+    }
+
+    // Статистика возвратов
+    @GetMapping("/statistics/returns")
+    public ResponseEntity<?> getReturnStatistics() {
+        return ResponseEntity.ok(loanService.getReturnStatistics());
     }
 }

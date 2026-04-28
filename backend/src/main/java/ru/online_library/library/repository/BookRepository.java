@@ -1,6 +1,7 @@
 package ru.online_library.library.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.online_library.library.model.Book;
 
@@ -25,4 +26,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByAvailable(Boolean available);
 
     List<Book> findAllByOrderByAvailableDesc();
+
+    @Query("SELECT b FROM Book b LEFT JOIN Loan l ON b = l.book AND l.status IN ('ACTIVE', 'RETURNED', 'OVERDUE') GROUP BY b ORDER BY COUNT(l) DESC")
+    List<Book> findAllOrderByPopularity();
+
+    @Query("SELECT b, COUNT(l) FROM Book b LEFT JOIN Loan l ON b = l.book GROUP BY b ORDER BY COUNT(l) DESC, b.available DESC")
+    List<Object[]> findAllOrderByPopularityWithCount();
 }

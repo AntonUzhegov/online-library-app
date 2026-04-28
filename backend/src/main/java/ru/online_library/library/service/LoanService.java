@@ -11,6 +11,8 @@ import ru.online_library.library.model.User;
 import ru.online_library.library.repository.BookRepository;
 import ru.online_library.library.repository.LoanRepository;
 import ru.online_library.library.repository.UserRepository;
+
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import java.time.LocalDateTime;
@@ -173,5 +175,44 @@ public class LoanService {
         dto.setBorrowedBy(fullName.trim().isEmpty() ? user.getUsername() : fullName);
 
         return dto;
+    }
+
+    // Все выдачи
+    public List<LoanDTO> getAllLoans() {
+        return loanRepository.findAllByOrderByLoanDateDesc()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Просроченные
+    public List<LoanDTO> getOverdueLoans() {
+        return loanRepository.findByStatus(LoanStatus.OVERDUE)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Активные
+    public List<LoanDTO> getActiveLoans() {
+        return loanRepository.findByStatusIn(List.of(LoanStatus.ACTIVE, LoanStatus.OVERDUE))
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Популярные книги
+    public List<Map<String, Object>> getPopularBooks() {
+        return loanRepository.findPopularBooks().stream()
+                .map(row -> Map.of("title", row[0], "count", row[1]))
+                .collect(Collectors.toList());
+    }
+
+    // Статистика возвратов
+    public Map<String, Long> getReturnStatistics() {
+        return Map.of(
+                "returned", loanRepository.countByStatus(LoanStatus.RETURNED),
+                "overdue", loanRepository.countByStatus(LoanStatus.OVERDUE)
+        );
     }
 }
