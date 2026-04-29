@@ -24,10 +24,15 @@ function AppContent(): React.ReactElement {
                      location.pathname === '/admin/users' ||
                      location.pathname === '/admin/stats'
 
+  const isAdminPage = location.pathname.startsWith('/admin')
+
   return (
     <>
       {!hideHeader && <Header />}
-      <main style={{ minHeight: '80vh', padding: '20px' }}>
+      <main style={{ 
+        minHeight: '80vh', 
+        padding: isAdminPage ? 0 : '20px'  
+      }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/catalog" element={<CatalogPage />} />
