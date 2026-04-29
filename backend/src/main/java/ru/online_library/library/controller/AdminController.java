@@ -116,4 +116,10 @@ public class AdminController {
     public ResponseEntity<?> getReturnStatistics() {
         return ResponseEntity.ok(loanService.getReturnStatistics());
     }
+
+    // Месячная статистика
+    @GetMapping("/statistics/monthly")
+    public ResponseEntity<?> getMonthlyStatistics() {
+        return ResponseEntity.ok(loanService.getMonthlyStatistics());
+    }
 }

@@ -63,7 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/authors/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/books/**").permitAll()
-
+                        
                         // Админ и библиотекарь — управление книгами
                         .requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
                         .requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("ADMIN", "LIBRARIAN")

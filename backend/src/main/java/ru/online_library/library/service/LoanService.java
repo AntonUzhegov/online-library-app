@@ -2,6 +2,7 @@ package ru.online_library.library.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.online_library.library.dto.LoanDTO;
 import ru.online_library.library.model.Book;
@@ -12,6 +13,8 @@ import ru.online_library.library.repository.BookRepository;
 import ru.online_library.library.repository.LoanRepository;
 import ru.online_library.library.repository.UserRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -201,18 +204,55 @@ public class LoanService {
                 .collect(Collectors.toList());
     }
 
-    // Популярные книги
     public List<Map<String, Object>> getPopularBooks() {
-        return loanRepository.findPopularBooks().stream()
-                .map(row -> Map.of("title", row[0], "count", row[1]))
-                .collect(Collectors.toList());
+        List<Object[]> results = loanRepository.findPopularBooks();
+        List<Map<String, Object>> popular = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Book book = (Book) row[0];
+            Long loanCount = (Long) row[1];
+
+            Map<String, Object> bookStats = new HashMap<>();
+            bookStats.put("id", book.getId());
+            bookStats.put("title", book.getTitle());
+            bookStats.put("authors", book.getAuthors().stream()
+                    .map(author -> author.getFirstName() + " " + author.getLastName())
+                    .collect(Collectors.toList()));
+            bookStats.put("loanCount", loanCount);
+            bookStats.put("available", book.getAvailable());
+
+            popular.add(bookStats);
+        }
+        return popular;
     }
 
     // Статистика возвратов
     public Map<String, Long> getReturnStatistics() {
-        return Map.of(
-                "returned", loanRepository.countByStatus(LoanStatus.RETURNED),
-                "overdue", loanRepository.countByStatus(LoanStatus.OVERDUE)
-        );
+        long totalLoans = loanRepository.count();
+        long activeLoans = loanRepository.countByStatus(LoanStatus.ACTIVE);
+        long returned = loanRepository.countByStatus(LoanStatus.RETURNED);
+        long overdue = loanRepository.countByStatus(LoanStatus.OVERDUE);
+
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("totalLoans", totalLoans);
+        stats.put("activeLoans", activeLoans);
+        stats.put("returnedLoans", returned);
+        stats.put("overdueLoans", overdue);
+
+        return stats;
+    }
+
+    public List<Map<String, Object>> getMonthlyStatistics() {
+        List<Object[]> results = loanRepository.getMonthlyStatistics(PageRequest.of(0, 12));
+        List<Map<String, Object>> statistics = new ArrayList<>();
+
+        for (Object[] row : results) {
+            Map<String, Object> stat = new HashMap<>();
+            stat.put("month", row[0].toString());
+            stat.put("loans", row[1]);
+            stat.put("returns", row[2] != null ? row[2] : 0L);
+            statistics.add(stat);
+        }
+        return statistics;
     }
 }
