@@ -12,6 +12,12 @@ interface ErrorResponse {
   }
 }
 
+interface PopularBook {
+  id: number
+  title: string
+  loanCount: number
+}
+
 function CatalogPage(): React.ReactElement {
   const { user } = useContext(AuthContext)
   const [books, setBooks] = useState<Book[]>([])
@@ -24,6 +30,8 @@ function CatalogPage(): React.ReactElement {
   const [yearTo, setYearTo] = useState<string>('')
   const [selectedBook, setSelectedBook] = useState<Book | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [popularBookIds, setPopularBookIds] = useState<Set<number>>(new Set())
+  const [popularityMap, setPopularityMap] = useState<Map<number, number>>(new Map())
   
   const [isCategoryOpen, setIsCategoryOpen] = useState<boolean>(false)
   const [categories, setCategories] = useState<Category[]>([])
@@ -31,6 +39,7 @@ function CatalogPage(): React.ReactElement {
 
   useEffect(() => {
     fetchCategories()
+    fetchPopularBooks()
     
     const handleClickOutside = (event: MouseEvent): void => {
       if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
@@ -44,6 +53,25 @@ function CatalogPage(): React.ReactElement {
   useEffect(() => {
     fetchBooks()
   }, [searchQuery, selectedCategory, yearFrom, yearTo])
+
+  const fetchPopularBooks = async (): Promise<void> => {
+    try {
+      const response = await api.get('/admin/statistics/popular')
+      const popularBooks = response.data as PopularBook[]
+      const top5Ids = new Set<number>()
+      const popularity = new Map<number, number>()
+      
+      popularBooks.slice(0, 5).forEach((book) => {
+        top5Ids.add(book.id)
+        popularity.set(book.id, book.loanCount)
+      })
+      
+      setPopularBookIds(top5Ids)
+      setPopularityMap(popularity)
+    } catch (err) {
+      console.error('Ошибка загрузки популярных книг', err)
+    }
+  }
 
   const fetchCategories = async (): Promise<void> => {
     try {
@@ -74,8 +102,16 @@ function CatalogPage(): React.ReactElement {
       }
       
       const response = await api.get(url, { params })
+      const booksData = response.data as Book[]
       
-      const sortedBooks: Book[] = [...(response.data as Book[])].sort((a, b) => {
+      const sortedBooks = booksData.sort((a, b) => {
+        const popularityA = popularityMap.get(a.id) || 0
+        const popularityB = popularityMap.get(b.id) || 0
+        
+        if (popularityA !== popularityB) {
+          return popularityB - popularityA
+        }
+        
         if (a.available === b.available) return 0
         return a.available ? -1 : 1
       })
@@ -102,6 +138,7 @@ function CatalogPage(): React.ReactElement {
       await api.post(`/loans/borrow/${bookId}`)
       setToast({ message: 'Книга успешно забронирована!', type: 'success' })
       fetchBooks()
+      fetchPopularBooks()
       closeModal()
     } catch (err: any) {
       setToast({ message: err.response?.data || 'Ошибка при бронировании', type: 'error' })
@@ -429,6 +466,27 @@ function CatalogPage(): React.ReactElement {
                 e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.08)'
               }}
             >
+              {popularBookIds.has(book.id) && (
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  backgroundColor: '#ff6b35',
+                  color: 'white',
+                  borderRadius: '30px',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px',
+                  zIndex: 2,
+                  boxShadow: '0 2px 8px rgba(255,107,53,0.3)'
+                }}>
+                  🔥
+                </div>
+              )}
+              
               <div style={{
                 height: '260px',
                 backgroundColor: '#f5f7fa',
@@ -491,7 +549,6 @@ function CatalogPage(): React.ReactElement {
                   {book.publicationYear || 'Год не указан'}
                 </p>
 
-                {/* Если книга недоступна — показываем кто взял внизу справа */}
                 {!book.available && book.borrowedBy && (
                   <div style={{
                     marginTop: 'auto',
@@ -603,15 +660,20 @@ function CatalogPage(): React.ReactElement {
               </div>
               
               <div style={{ flex: 1 }}>
-                <h2 style={{
-                  fontSize: '26px',
-                  marginBottom: '16px',
-                  color: '#0a3b2a',
-                  fontWeight: '700',
-                  lineHeight: '1.3'
-                }}>
-                  {selectedBook.title}
-                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                  <h2 style={{
+                    fontSize: '26px',
+                    color: '#0a3b2a',
+                    fontWeight: '700',
+                    lineHeight: '1.3',
+                    margin: 0
+                  }}>
+                    {selectedBook.title}
+                  </h2>
+                  {popularBookIds.has(selectedBook.id) && (
+                    <span style={{ fontSize: '24px' }}>🔥</span>
+                  )}
+                </div>
                 
                 <div style={{
                   display: 'flex',
