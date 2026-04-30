@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { COLORS, SHADOWS, BORDER_RADIUS, FONTS, SPACING, TRANSITIONS } from '../../styles/constants'
 
 interface AuthLayoutProps {
   children: ReactNode
@@ -14,8 +15,8 @@ function AuthLayout({ children, title, subtitle }: AuthLayoutProps): React.React
       width: '100%',
       margin: 0,
       padding: 0,
-      backgroundColor: '#f5f5f5',
-      fontFamily: "'Poppins', 'Segoe UI', Arial, sans-serif",
+      backgroundColor: COLORS.background,
+      fontFamily: FONTS.family,
       position: 'relative',
       display: 'flex',
       alignItems: 'center',
@@ -25,41 +26,41 @@ function AuthLayout({ children, title, subtitle }: AuthLayoutProps): React.React
         position: 'absolute',
         top: '30px',
         left: '30px',
-        backgroundColor: '#0f5c3e',
-        color: 'white',
+        backgroundColor: COLORS.primary,
+        color: COLORS.textWhite,
         textDecoration: 'none',
-        padding: '10px 20px',
-        borderRadius: '30px',
-        fontSize: '16px',
-        fontWeight: '500',
-        transition: '0.3s',
+        padding: `${SPACING.sm} ${SPACING.xl}`,
+        borderRadius: BORDER_RADIUS.pill,
+        fontSize: FONTS.size.xl,
+        fontWeight: FONTS.weight.medium,
+        transition: TRANSITIONS.fast,
         zIndex: 10
       }}
-      onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.backgroundColor = '#1a7a52'}
-      onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.backgroundColor = '#0f5c3e'}>
+      onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.backgroundColor = COLORS.primaryLight}
+      onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.backgroundColor = COLORS.primary}>
         ← Назад
       </Link>
 
       <div style={{
-        backgroundColor: 'white',
-        borderRadius: '30px',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+        backgroundColor: COLORS.cardBg,
+        borderRadius: BORDER_RADIUS.pill,
+        boxShadow: SHADOWS.xlarge,
         maxWidth: '480px',
         width: '90%',
-        padding: '50px',
+        padding: SPACING.huge,
         textAlign: 'center'
       }}>
         
-        <div style={{ marginBottom: '30px' }}>
+        <div style={{ marginBottom: SPACING.xxxl }}>
           <h1 style={{
-            fontSize: '32px',
-            color: '#0f5c3e',
-            marginBottom: '10px',
-            fontWeight: '600'
+            fontSize: FONTS.size.giant,
+            color: COLORS.primary,
+            marginBottom: SPACING.sm,
+            fontWeight: FONTS.weight.semibold
           }}>
             {title}
           </h1>
-          <p style={{ color: '#666', fontSize: '16px' }}>
+          <p style={{ color: COLORS.textSecondary, fontSize: FONTS.size.xl }}>
             {subtitle}
           </p>
         </div>
