@@ -1,10 +1,12 @@
-import { createContext, useState, ReactNode } from 'react'
+import { createContext, useState, useEffect, ReactNode } from 'react'
 import { User } from '../types'
+import api from '../service/api'
 
 interface AuthContextType {
   user: User | null
   login: (userData: User) => void
   logout: () => void
+  loading: boolean
 }
 
 export const AuthContext = createContext<AuthContextType>({} as AuthContextType)
@@ -15,18 +17,34 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps): React.ReactElement {
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
+
+  useEffect(() => {
+    const loadUserFromToken = async () => {
+      const token = localStorage.getItem('token')
+      
+      if (!token) {
+        setLoading(false)
+        return
+      }
+      
+      try {
+        const response = await api.get('/users/me')
+        setUser(response.data)
+      } catch (error) {
+        console.error('Ошибка загрузки пользователя:', error)
+        localStorage.removeItem('token')
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadUserFromToken()
+  }, [])
 
   const login = (userData: User): void => {
-    setUser({
-      id: userData.id,
-      username: userData.username,
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      role: userData.role,
-      registrationDate: userData.registrationDate,
-      isActive: userData.isActive
-    })
+    setUser(userData)
   }
 
   const logout = (): void => {
@@ -35,7 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps): React.ReactElemen
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )

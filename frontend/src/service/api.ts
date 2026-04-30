@@ -16,17 +16,35 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 })
 
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            localStorage.removeItem('token')
-            // Не делаем редирект на странице логина
-            if (window.location.pathname !== '/login') {
-                window.location.href = '/login'
-            }
-        }
-        return Promise.reject(error)
+  (response) => response,
+  (error: AxiosError) => {
+    const status = error.response?.status
+
+    if (status === 401) {
+      localStorage.removeItem('token')
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
     }
+    
+    if (status === 403) {
+      console.error('[API] Доступ запрещён')
+    }
+    
+    if (status === 404) {
+      console.error('[API] Ресурс не найден')
+    }
+    
+    if (error.code === 'ECONNABORTED') {
+      console.error('[API] Таймаут запроса')
+    }
+    
+    if (error.message === 'Network Error') {
+      console.error('[API] Нет соединения с сервером')
+    }
+    
+    return Promise.reject(error)
+  }
 )
 
 export default api

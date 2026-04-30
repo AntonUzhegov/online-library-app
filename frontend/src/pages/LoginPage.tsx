@@ -1,62 +1,24 @@
-import { useState, useContext } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { AuthContext } from '../context/AuthContext'
+import { Link } from 'react-router-dom'
 import AuthLayout from '../components/auth/AuthLayout'
-import api from '../service/api'
-import { User } from '../types'
+import Input from '../components/common/Input'
+import { useLogin } from '../hooks/useLogin'
+import { COLORS, BORDER_RADIUS, SPACING, FONTS, TRANSITIONS, SHADOWS } from '../styles/constants'
 
 function LoginPage(): React.ReactElement {
-  const [username, setUsername] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [error, setError] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
-  const { login } = useContext(AuthContext)
-  const navigate = useNavigate()
-
-  interface ErrorResponse {
-    response?: {
-      data?: {
-        error?: string
-        message?: string
-      }
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    try {
-      const response = await api.post('/auth/login', { username, password })
-      const { token } = response.data as { token: string }
-
-      localStorage.setItem('token', token)
-
-      const userResponse = await api.get('/users/me')
-      login(userResponse.data as User)
-
-      navigate('/')
-    } catch (err: unknown) {
-      const error = err as ErrorResponse
-      setError(error.response?.data?.message || error.response?.data?.error || 'Ошибка входа')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { username, setUsername, password, setPassword, error, loading, handleSubmit } = useLogin()
 
   return (
     <AuthLayout title="Добро пожаловать!" subtitle="Войдите в свою библиотеку">
       
       {error && (
         <div style={{
-          backgroundColor: '#fee2e2',
-          color: '#c0392b',
-          padding: '14px',
-          borderRadius: '16px',
-          marginBottom: '28px',
-          fontSize: '14px',
-          fontWeight: '500',
+          backgroundColor: COLORS.dangerBg,
+          color: COLORS.danger,
+          padding: SPACING.md,
+          borderRadius: BORDER_RADIUS.medium,
+          marginBottom: SPACING.xxxl,
+          fontSize: FONTS.size.base,
+          fontWeight: FONTS.weight.medium,
           textAlign: 'center'
         }}>
           {error}
@@ -64,116 +26,52 @@ function LoginPage(): React.ReactElement {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '22px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Логин
-          </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="ivan_ivanov"
-          />
-        </div>
+        <Input
+          type="text"
+          label="Логин"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="ivan_ivanov"
+          required
+        />
 
-        <div style={{ marginBottom: '28px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Пароль
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="••••••••"
-          />
-        </div>
+        <Input
+          type="password"
+          label="Пароль"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+          required
+        />
 
         <button
           type="submit"
           disabled={loading}
           style={{
             width: '100%',
-            padding: '15px',
-            background: 'linear-gradient(135deg, #1a6b4a, #0f5c3e)',
-            color: 'white',
+            padding: SPACING.lg,
+            background: COLORS.primaryGradient,
+            color: COLORS.textWhite,
             border: 'none',
-            borderRadius: '40px',
-            fontSize: '16px',
-            fontWeight: '700',
+            borderRadius: BORDER_RADIUS.pill,
+            fontSize: FONTS.size.xl,
+            fontWeight: FONTS.weight.bold,
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s',
-            marginBottom: '24px',
-            boxShadow: '0 4px 14px rgba(26,122,82,0.3)',
+            transition: TRANSITIONS.normal,
+            marginBottom: SPACING.xxl,
+            boxShadow: SHADOWS.primary,
             opacity: loading ? 0.7 : 1
           }}
-          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+          onMouseEnter={(e) => {
             if (!loading) {
               e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+              e.currentTarget.style.boxShadow = SHADOWS.primaryHover
             }
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+          onMouseLeave={(e) => {
             if (!loading) {
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+              e.currentTarget.style.boxShadow = SHADOWS.primary
             }
           }}
         >
@@ -182,20 +80,20 @@ function LoginPage(): React.ReactElement {
       </form>
 
       <div style={{ 
-        borderTop: '1px solid #e5e7eb', 
-        paddingTop: '20px',
-        marginTop: '8px'
+        borderTop: `1px solid ${COLORS.border}`, 
+        paddingTop: SPACING.xl,
+        marginTop: SPACING.sm
       }}>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>
+        <p style={{ color: COLORS.textSecondary, fontSize: FONTS.size.base }}>
           Нет аккаунта?{' '}
           <Link to="/register" style={{
-            color: '#1a7a52',
+            color: COLORS.primary,
             textDecoration: 'none',
-            fontWeight: '700',
-            transition: '0.3s'
+            fontWeight: FONTS.weight.bold,
+            transition: TRANSITIONS.fast
           }}
-          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#0f5c3e'}
-          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#1a7a52'}>
+          onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primaryLight}
+          onMouseLeave={(e) => e.currentTarget.style.color = COLORS.primary}>
             Зарегистрироваться
           </Link>
         </p>
