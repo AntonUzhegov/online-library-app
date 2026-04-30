@@ -45,7 +45,7 @@ function Input({ type, label, value, onChange, placeholder, required, error }: I
         fontSize: FONTS.size.base,
         letterSpacing: '0.3px'
       }}>
-        {label} {required && <span style={{ color: COLORS.danger }}>*</span>}
+        {label} {required && <span style={{ color: COLORS.danger }}></span>}
       </label>
       <input
         type={type}

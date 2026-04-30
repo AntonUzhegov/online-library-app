@@ -1,104 +1,41 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import AuthLayout from '../components/auth/AuthLayout'
-import api from '../service/api'
+import Input from '../components/common/Input'
+import { useRegister } from '../hooks/useRegister'
+import { COLORS, BORDER_RADIUS, SPACING, FONTS, TRANSITIONS, SHADOWS } from '../styles/constants'
 
 function RegisterPage(): React.ReactElement {
-  const [username, setUsername] = useState<string>('')
-  const [email, setEmail] = useState<string>('')
-  const [firstName, setFirstName] = useState<string>('')
-  const [lastName, setLastName] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const [confirmPassword, setConfirmPassword] = useState<string>('')
-  const [error, setError] = useState<string>('')
-  const [success, setSuccess] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
-  const navigate = useNavigate()
-
-  interface ErrorResponse {
-    response?: {
-      data?: {
-        error?: string
-      }
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
-    setLoading(true)
-
-    if (password !== confirmPassword) {
-      setError('Пароли не совпадают')
-      setLoading(false)
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Пароль должен быть не менее 6 символов')
-      setLoading(false)
-      return
-    }
-
-    if (username.length < 3) {
-      setError('Логин должен быть не менее 3 символов')
-      setLoading(false)
-      return
-    }
-
-    if (!email.includes('@')) {
-      setError('Введите корректный email')
-      setLoading(false)
-      return
-    }
-
-    if (firstName.length < 2) {
-      setError('Имя должно быть не менее 2 символов')
-      setLoading(false)
-      return
-    }
-
-    if (lastName.length < 2) {
-      setError('Фамилия должна быть не менее 2 символов')
-      setLoading(false)
-      return
-    }
-
-    try {
-      await api.post('/auth/register', {
-        username,
-        email,
-        password,
-        firstName,
-        lastName
-      })
-      
-      setSuccess('Регистрация прошла успешно!')
-      
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
-    } catch (err: unknown) {
-      const error = err as ErrorResponse
-      setError(error.response?.data?.error || 'Ошибка регистрации')
-    } finally {
-      setLoading(false)
-    }
-  }
+  const {
+    username,
+    setUsername,
+    email,
+    setEmail,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
+    password,
+    setPassword,
+    confirmPassword,
+    setConfirmPassword,
+    error,
+    success,
+    loading,
+    handleSubmit,
+  } = useRegister()
 
   return (
     <AuthLayout title="Создать аккаунт" subtitle="Присоединяйтесь к нашей библиотеке">
       
       {error && (
         <div style={{
-          backgroundColor: '#fee2e2',
-          color: '#c0392b',
-          padding: '14px',
-          borderRadius: '16px',
-          marginBottom: '28px',
-          fontSize: '14px',
-          fontWeight: '500',
+          backgroundColor: COLORS.dangerBg,
+          color: COLORS.danger,
+          padding: SPACING.md,
+          borderRadius: BORDER_RADIUS.medium,
+          marginBottom: SPACING.xxxl,
+          fontSize: FONTS.size.base,
+          fontWeight: FONTS.weight.medium,
           textAlign: 'center'
         }}>
           {error}
@@ -108,12 +45,12 @@ function RegisterPage(): React.ReactElement {
       {success && (
         <div style={{
           backgroundColor: '#d1fae5',
-          color: '#0f5c3e',
-          padding: '14px',
-          borderRadius: '16px',
-          marginBottom: '28px',
-          fontSize: '14px',
-          fontWeight: '500',
+          color: COLORS.primary,
+          padding: SPACING.md,
+          borderRadius: BORDER_RADIUS.medium,
+          marginBottom: SPACING.xxxl,
+          fontSize: FONTS.size.base,
+          fontWeight: FONTS.weight.medium,
           textAlign: 'center'
         }}>
           {success}
@@ -121,280 +58,88 @@ function RegisterPage(): React.ReactElement {
       )}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '22px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Логин 
-          </label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="ivan_ivanov"
-          />
-        </div>
+        <Input
+          type="text"
+          label="Логин"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="ivan_ivanov"
+          required
+        />
 
-        <div style={{ marginBottom: '22px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Email 
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="ivanov@example.com"
-          />
-        </div>
+        <Input
+          type="email"
+          label="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="ivanov@example.com"
+          required
+        />
 
-        <div style={{ marginBottom: '22px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Имя 
-          </label>
-          <input
-            type="text"
-            value={firstName}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="Иван"
-          />
-        </div>
+        <Input
+          type="text"
+          label="Имя"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Иван"
+          required
+        />
 
-        <div style={{ marginBottom: '22px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Фамилия 
-          </label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="Иванов"
-          />
-        </div>
+        <Input
+          type="text"
+          label="Фамилия"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Иванов"
+          required
+        />
 
-        <div style={{ marginBottom: '22px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Пароль 
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="минимум 6 символов"
-          />
-        </div>
+        <Input
+          type="password"
+          label="Пароль"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="минимум 6 символов"
+          required
+        />
 
-        <div style={{ marginBottom: '28px', textAlign: 'left' }}>
-          <label style={{
-            display: 'block',
-            marginBottom: '10px',
-            color: '#1a1a1a',
-            fontWeight: '600',
-            fontSize: '14px',
-            letterSpacing: '0.3px'
-          }}>
-            Подтверждение пароля 
-          </label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
-            required
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '16px',
-              fontSize: '15px',
-              transition: 'all 0.2s',
-              outline: 'none',
-              boxSizing: 'border-box',
-              backgroundColor: '#fafafa'
-            }}
-            onFocus={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#1a7a52'
-              e.target.style.backgroundColor = 'white'
-              e.target.style.boxShadow = '0 0 0 3px rgba(26,122,82,0.1)'
-            }}
-            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-              e.target.style.borderColor = '#e5e7eb'
-              e.target.style.backgroundColor = '#fafafa'
-              e.target.style.boxShadow = 'none'
-            }}
-            placeholder="повторите пароль"
-          />
-        </div>
+        <Input
+          type="password"
+          label="Подтверждение пароля"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="повторите пароль"
+          required
+        />
 
         <button
           type="submit"
           disabled={loading}
           style={{
             width: '100%',
-            padding: '15px',
-            background: 'linear-gradient(135deg, #1a6b4a, #0f5c3e)',
-            color: 'white',
+            padding: SPACING.lg,
+            background: COLORS.primaryGradient,
+            color: COLORS.textWhite,
             border: 'none',
-            borderRadius: '40px',
-            fontSize: '16px',
-            fontWeight: '700',
+            borderRadius: BORDER_RADIUS.pill,
+            fontSize: FONTS.size.xl,
+            fontWeight: FONTS.weight.bold,
             cursor: loading ? 'not-allowed' : 'pointer',
-            transition: 'all 0.3s',
-            marginBottom: '24px',
-            boxShadow: '0 4px 14px rgba(26,122,82,0.3)',
+            transition: TRANSITIONS.normal,
+            marginBottom: SPACING.xxl,
+            boxShadow: SHADOWS.primary,
             opacity: loading ? 0.7 : 1
           }}
-          onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+          onMouseEnter={(e) => {
             if (!loading) {
               e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 8px 20px rgba(26,122,82,0.4)'
+              e.currentTarget.style.boxShadow = SHADOWS.primaryHover
             }
           }}
-          onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+          onMouseLeave={(e) => {
             if (!loading) {
               e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 14px rgba(26,122,82,0.3)'
+              e.currentTarget.style.boxShadow = SHADOWS.primary
             }
           }}
         >
@@ -403,20 +148,20 @@ function RegisterPage(): React.ReactElement {
       </form>
 
       <div style={{ 
-        borderTop: '1px solid #e5e7eb', 
-        paddingTop: '20px',
-        marginTop: '8px'
+        borderTop: `1px solid ${COLORS.border}`, 
+        paddingTop: SPACING.xl,
+        marginTop: SPACING.sm
       }}>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>
+        <p style={{ color: COLORS.textSecondary, fontSize: FONTS.size.base }}>
           Уже есть аккаунт?{' '}
           <Link to="/login" style={{
-            color: '#1a7a52',
+            color: COLORS.primary,
             textDecoration: 'none',
-            fontWeight: '700',
-            transition: '0.3s'
+            fontWeight: FONTS.weight.bold,
+            transition: TRANSITIONS.fast
           }}
-          onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#0f5c3e'}
-          onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => e.currentTarget.style.color = '#1a7a52'}>
+          onMouseEnter={(e) => e.currentTarget.style.color = COLORS.primaryLight}
+          onMouseLeave={(e) => e.currentTarget.style.color = COLORS.primary}>
             Войти
           </Link>
         </p>

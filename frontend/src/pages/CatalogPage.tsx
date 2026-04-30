@@ -39,7 +39,9 @@ function CatalogPage(): React.ReactElement {
 
   useEffect(() => {
     fetchCategories()
-    fetchPopularBooks()
+    if (user) {
+      fetchPopularBooks()
+    }
     
     const handleClickOutside = (event: MouseEvent): void => {
       if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
@@ -48,7 +50,7 @@ function CatalogPage(): React.ReactElement {
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [user])  
 
   useEffect(() => {
     fetchBooks()

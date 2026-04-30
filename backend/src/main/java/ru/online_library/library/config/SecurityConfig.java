@@ -72,6 +72,10 @@ public class SecurityConfig {
                         // Админ и библиотекарь — админ-панель книг
                         .requestMatchers("/api/admin/books/**").hasAnyRole("ADMIN", "LIBRARIAN")
 
+                        // ← ДОБАВЬ ЭТО:
+                        // Админ и библиотекарь — статистика
+                        .requestMatchers("/api/admin/statistics/**").hasAnyRole("ADMIN", "LIBRARIAN")
+
                         // Только админ — управление пользователями
                         .requestMatchers("/api/admin/users/**").hasRole("ADMIN")
 
