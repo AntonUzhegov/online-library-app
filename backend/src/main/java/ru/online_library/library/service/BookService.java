@@ -2,6 +2,7 @@ package ru.online_library.library.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.online_library.library.dto.BookDTO;
 import ru.online_library.library.model.Author;
 import ru.online_library.library.model.Book;
@@ -12,9 +13,14 @@ import ru.online_library.library.repository.BookRepository;
 import ru.online_library.library.repository.CategoryRepository;
 import ru.online_library.library.repository.LoanRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -125,20 +131,30 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-    public BookDTO addBook(BookDTO bookDTO) {
+    public BookDTO addBook(String title, String isbn, Integer year,
+                           String publisher, String authors, String categories,
+                           MultipartFile coverFile) throws IOException {
         Book book = new Book();
-        book.setTitle(bookDTO.getTitle());
-        book.setIsbn(bookDTO.getIsbn());
-        book.setPublicationYear(bookDTO.getPublicationYear());
-        book.setPublisher(bookDTO.getPublisher());
+        book.setTitle(title);
+        book.setIsbn(isbn);
+        book.setPublicationYear(year);
+        book.setPublisher(publisher);
         book.setAvailable(true);
-        book.setCoverImage(bookDTO.getCoverImage());
+
+        // Обложка
+        if (coverFile != null && !coverFile.isEmpty()) {
+            String fileName = UUID.randomUUID().toString().substring(0, 8) + "_" + coverFile.getOriginalFilename();
+            Path uploadPath = Paths.get("../frontend/public/covers/");
+            Files.createDirectories(uploadPath);
+            Files.copy(coverFile.getInputStream(), uploadPath.resolve(fileName));
+            book.setCoverImage("/covers/" + fileName);
+        }
 
         // Привязка авторов
-        if (bookDTO.getAuthors() != null && !bookDTO.getAuthors().isEmpty()) {
-            Set<Author> authors = new HashSet<>();
-            for (String fullName : bookDTO.getAuthors()) {
-                String[] parts = fullName.split(" ", 2);
+        if (authors != null && !authors.isEmpty()) {
+            Set<Author> authorSet = new HashSet<>();
+            for (String fullName : authors.split(",")) {
+                String[] parts = fullName.trim().split(" ", 2);
                 String firstName = parts[0];
                 String lastName = parts.length > 1 ? parts[1] : "";
 
@@ -149,45 +165,54 @@ public class BookService {
                             newAuthor.setLastName(lastName);
                             return authorRepository.save(newAuthor);
                         });
-                authors.add(author);
+                authorSet.add(author);
             }
-            book.setAuthors(authors);
+            book.setAuthors(authorSet);
         }
 
         // Привязка категорий
-        if (bookDTO.getCategories() != null && !bookDTO.getCategories().isEmpty()) {
-            Set<Category> categories = new HashSet<>();
-            for (String categoryName : bookDTO.getCategories()) {
-                Category category = categoryRepository.findByName(categoryName)
+        if (categories != null && !categories.isEmpty()) {
+            Set<Category> categorySet = new HashSet<>();
+            for (String name : categories.split(",")) {
+                Category category = categoryRepository.findByName(name.trim())
                         .orElseGet(() -> {
-                            Category newCategory = new Category();
-                            newCategory.setName(categoryName);
-                            return categoryRepository.save(newCategory);
+                            Category newCat = new Category();
+                            newCat.setName(name.trim());
+                            return categoryRepository.save(newCat);
                         });
-                categories.add(category);
+                categorySet.add(category);
             }
-            book.setCategories(categories);
+            book.setCategories(categorySet);
         }
 
         return convertToDTO(bookRepository.save(book));
     }
 
-    // Обновить книгу
-    public BookDTO updateBook(Long id, BookDTO bookDTO) {
+    public BookDTO updateBook(Long id, String title, String isbn, Integer year,
+                              String publisher, String authors, String categories,
+                              MultipartFile coverFile) throws IOException {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Книга не найдена"));
 
-        book.setTitle(bookDTO.getTitle());
-        book.setIsbn(bookDTO.getIsbn());
-        book.setPublicationYear(bookDTO.getPublicationYear());
-        book.setPublisher(bookDTO.getPublisher());
-        book.setCoverImage(bookDTO.getCoverImage());
+        book.setTitle(title);
+        book.setIsbn(isbn);
+        book.setPublicationYear(year);
+        book.setPublisher(publisher);
+
+        // Обложка (только если загрузили новую)
+        if (coverFile != null && !coverFile.isEmpty()) {
+            String fileName = UUID.randomUUID().toString().substring(0, 8) + "_" + coverFile.getOriginalFilename();
+            Path uploadPath = Paths.get("../frontend/public/covers/");
+            Files.createDirectories(uploadPath);
+            Files.copy(coverFile.getInputStream(), uploadPath.resolve(fileName));
+            book.setCoverImage("/covers/" + fileName);
+        }
 
         // Обновление авторов
-        if (bookDTO.getAuthors() != null) {
-            Set<Author> authors = new HashSet<>();
-            for (String fullName : bookDTO.getAuthors()) {
-                String[] parts = fullName.split(" ", 2);
+        if (authors != null && !authors.isEmpty()) {
+            Set<Author> authorSet = new HashSet<>();
+            for (String fullName : authors.split(",")) {
+                String[] parts = fullName.trim().split(" ", 2);
                 String firstName = parts[0];
                 String lastName = parts.length > 1 ? parts[1] : "";
 
@@ -198,24 +223,24 @@ public class BookService {
                             newAuthor.setLastName(lastName);
                             return authorRepository.save(newAuthor);
                         });
-                authors.add(author);
+                authorSet.add(author);
             }
-            book.setAuthors(authors);
+            book.setAuthors(authorSet);
         }
 
         // Обновление категорий
-        if (bookDTO.getCategories() != null) {
-            Set<Category> categories = new HashSet<>();
-            for (String categoryName : bookDTO.getCategories()) {
-                Category category = categoryRepository.findByName(categoryName)
+        if (categories != null && !categories.isEmpty()) {
+            Set<Category> categorySet = new HashSet<>();
+            for (String name : categories.split(",")) {
+                Category category = categoryRepository.findByName(name.trim())
                         .orElseGet(() -> {
-                            Category newCategory = new Category();
-                            newCategory.setName(categoryName);
-                            return categoryRepository.save(newCategory);
+                            Category newCat = new Category();
+                            newCat.setName(name.trim());
+                            return categoryRepository.save(newCat);
                         });
-                categories.add(category);
+                categorySet.add(category);
             }
-            book.setCategories(categories);
+            book.setCategories(categorySet);
         }
 
         return convertToDTO(bookRepository.save(book));

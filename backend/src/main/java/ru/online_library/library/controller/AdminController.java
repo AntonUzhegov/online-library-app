@@ -2,6 +2,7 @@ package ru.online_library.library.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.online_library.library.dto.BookDTO;
 import ru.online_library.library.dto.LoanDTO;
 import ru.online_library.library.dto.UserDTO;
@@ -9,6 +10,7 @@ import ru.online_library.library.service.BookService;
 import ru.online_library.library.service.LoanService;
 import ru.online_library.library.service.UserService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -26,12 +28,21 @@ public class AdminController {
         this.loanService = loanService;
     }
 
-    // Добавить книгу
+    // Добавить книгу (с загрузкой обложки)
     @PostMapping("/books")
-    public ResponseEntity<?> addBook(@RequestBody BookDTO bookDTO) {
+    public ResponseEntity<?> addBook(
+            @RequestParam("title") String title,
+            @RequestParam("isbn") String isbn,
+            @RequestParam(value = "publicationYear", required = false) Integer year,
+            @RequestParam(value = "publisher", required = false) String publisher,
+            @RequestParam(value = "authors", required = false) String authors,
+            @RequestParam(value = "categories", required = false) String categories,
+            @RequestParam(value = "cover", required = false) MultipartFile coverFile) {
         try {
-            BookDTO created = bookService.addBook(bookDTO);
+            BookDTO created = bookService.addBook(title, isbn, year, publisher, authors, categories, coverFile);
             return ResponseEntity.ok(created);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Ошибка загрузки обложки: " + e.getMessage());
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -39,10 +50,20 @@ public class AdminController {
 
     // Обновить книгу
     @PutMapping("/books/{id}")
-    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody BookDTO bookDTO) {
+    public ResponseEntity<?> updateBook(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam("isbn") String isbn,
+            @RequestParam(value = "publicationYear", required = false) Integer year,
+            @RequestParam(value = "publisher", required = false) String publisher,
+            @RequestParam(value = "authors", required = false) String authors,
+            @RequestParam(value = "categories", required = false) String categories,
+            @RequestParam(value = "cover", required = false) MultipartFile coverFile) {
         try {
-            BookDTO updated = bookService.updateBook(id, bookDTO);
+            BookDTO updated = bookService.updateBook(id, title, isbn, year, publisher, authors, categories, coverFile);
             return ResponseEntity.ok(updated);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Ошибка загрузки обложки");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
